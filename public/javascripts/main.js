@@ -24,7 +24,7 @@ var transitLen;
 var transitAngle;
 var travelMatrix={};
 var selectedDistrict='all';
-var connections = []
+var connections = [];
 require([  "esri/geometry/projection","esri/map", "esri/Color", "esri/layers/GraphicsLayer", "esri/graphic", "esri/geometry/Polyline", "esri/geometry/Polygon", "../externalJS/DirectionalLineSymbol.js","esri/layers/FeatureLayer","../externalJS/geojsonlayer.js",
         "esri/symbols/SimpleMarkerSymbol",  "esri/symbols/SimpleLineSymbol", "esri/symbols/SimpleFillSymbol", "esri/toolbars/draw", "esri/SpatialReference","esri/config", "esri/request",
         "dojo/ready", "dojo/dom", "dojo/on","esri/dijit/BasemapToggle","esri/dijit/Scalebar","esri/geometry/Point","esri/InfoTemplate",   "esri/geometry/Extent"],
@@ -54,7 +54,7 @@ require([  "esri/geometry/projection","esri/map", "esri/Color", "esri/layers/Gra
             $("#flowTable").append('<tr><th>Travel Type Selction</th></tr>');
             // $('#district').append('<tr><th>District Selection</th></tr>');
 
-            d3.csv("./data/Origin_Dest_Zones_by_Trip_Purpose.csv", function(data) {
+            d3.csv("./data/Origin_Dest_Zones_by_Trip_Purpose_3776.csv", function(data) {
 
               var uniqueTravelType = data.map(data => data.Purpose_Category)
                 .filter((value, index, self) => self.indexOf(value) === index);
@@ -526,11 +526,12 @@ require([  "esri/geometry/projection","esri/map", "esri/Color", "esri/layers/Gra
           for(var j = 0,k= newCentroid.length;j<k;j++){
             var centroidWidth;
             centroidWidth = newCentroid[j][4]/ratio;
+            // console.log(newCentroid[j][0])
             const pointOrigin = new Point([newCentroid[j][0], newCentroid[j][1]], geoSpatialReference);
             const pointDest = new Point([newCentroid[j][2], newCentroid[j][3]], geoSpatialReference);
             const projectedPointOrigin = projection.project(pointOrigin, viewSpatialReference);
             const projectedPointDest = projection.project(pointDest, viewSpatialReference);
-
+  
             if(centroidWidth>0.05){
               var advSymbol = new DirectionalLineSymbol({
                   style: SimpleLineSymbol.STYLE_SOLID,
@@ -692,8 +693,8 @@ function splitDataIntoTravelMatrix(uniqueTravelType,data){
     var dataOfThisTravelType = []
     for(var j in data){
       if(data[j].Purpose_Category === thisTravelType){
-        var thisDataArray = [Number(data[j].Origin_Long),Number(data[j].Origin_Lat),Number(data[j].Dest_Long),Number(data[j].Dest_Lat),Number(data[j].Total),data[j].OriginZoneTAZ1669EETP,data[j].DestZoneTAZ1669EETP,data[j].OriginZoneDistrictTAZ1669EETP,data[j].DestZoneDistrictTAZ1669EETP]
-        dataOfThisTravelType.push(thisDataArray)
+        var thisDataArray = [Number(data[j].Origin_XCoord),Number(data[j].Origin_YCoord),Number(data[j].Dest_XCoord),Number(data[j].Dest_YCoord),Number(data[j].Total),data[j].OriginZoneTAZ1669EETP,data[j].DestZoneTAZ1669EETP,data[j].OriginZoneDistrictTAZ1669EETP,data[j].DestZoneDistrictTAZ1669EETP]
+        dataOfThisTravelType.push(thisDataArray);
       }
     }
     travelMatrix[thisTravelType] = dataOfThisTravelType;
