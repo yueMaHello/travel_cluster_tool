@@ -1,9 +1,9 @@
 /*jshint esversion: 6 */
 var map;
-var currentIteration = 1;
+var currentIteration = 1;//initialization
 var result;
-var clusterNumber=50;
-var defaultClusterNumber = 50;
+var clusterNumber=50;//initialization
+var defaultClusterNumber = 50;//initialization
 var newCentroid;
 var transitArray=[];
 var clusters = [];
@@ -14,7 +14,6 @@ var selectedMatrix;
 var ratio;
 var viewSpatialReference; 
 var geoSpatialReference;
-var mapSpatialReference;
 var geoJsonLayer1 ;
 var graphicsLayer;
 var startEndLayer;
@@ -26,52 +25,58 @@ var transitAngle;
 var travelMatrix={};
 var selectedDistrict='all';
 var connections = [];
-require([  "esri/geometry/projection","esri/map", "esri/Color", "esri/layers/GraphicsLayer", "esri/graphic", "esri/geometry/Polyline", "esri/geometry/Polygon", "../externalJS/DirectionalLineSymbol.js","esri/layers/FeatureLayer","../externalJS/geojsonlayer.js",
-        "esri/symbols/SimpleMarkerSymbol",  "esri/symbols/SimpleLineSymbol", "esri/symbols/SimpleFillSymbol", "esri/toolbars/draw", "esri/SpatialReference","esri/config", "esri/request",
+var csvFileTitle = {
+  origin_zone:"OriginZoneTAZ1669EETP",
+  origin_district:"OriginZoneDistrictTAZ1669EETP",
+  origin_x:"Origin_XCoord",
+  origin_y:"Origin_YCoord",
+  dest_zone:"DestZoneTAZ1669EETP",
+  dest_district:"DestZoneDistrictTAZ1669EETP",
+  dest_x:"Dest_XCoord",
+  dest_y:"Dest_YCoord",
+  weight:"Total"  
+};
+
+//get esri resource
+require(["esri/geometry/projection","esri/map", "esri/Color", "esri/layers/GraphicsLayer", "esri/graphic", "esri/geometry/Polyline", "esri/geometry/Polygon", "../externalJS/DirectionalLineSymbol.js","esri/layers/FeatureLayer","../externalJS/geojsonlayer.js",
+        "esri/symbols/SimpleMarkerSymbol",  "esri/symbols/SimpleLineSymbol", "esri/symbols/SimpleFillSymbol", "esri/SpatialReference","esri/config", "esri/request",
         "dojo/ready", "dojo/dom", "dojo/on","esri/dijit/BasemapToggle","esri/dijit/Scalebar","esri/geometry/Point","esri/InfoTemplate",   "esri/geometry/Extent"],
     function (projection,Map, Color, GraphicsLayer, Graphic, Polyline, Polygon, DirectionalLineSymbol,FeatureLayer,GeojsonLayer,
-              SimpleMarkerSymbol, SimpleLineSymbol, SimpleFillSymbol, Draw,SpatialReference, config, request,
+              SimpleMarkerSymbol, SimpleLineSymbol, SimpleFillSymbol,SpatialReference, config, request,
               ready, dom, on,BasemapToggle,Scalebar,Point,InfoTemplate,Extent) {
         ready(function () {
+            //projection is used to transfer data between different SpatialReference
              if (!projection.isSupported()) {
                alert("client-side projection is not supported");
                return;
              }
             const projectionPromise = projection.load();
+            //don't change. Always 4326 to plot
             viewSpatialReference = new SpatialReference({
               wkid: 4326
             });
+            //csv data Origin_Dest_Zones_by_Trip_Purpose_3776
             geoSpatialReference = new SpatialReference({
               wkid: 3776
             });
-            mapSpatialReference = new SpatialReference({
-                wkid: 3857
-            });
-
+        //show default clusterNumber
             $("#clusters").val(clusterNumber);
             $("#currentIteration").prop('disabled', true);
             $("#flowTable tr").remove();
-            // $('#district tr').remove();
             $("#flowTable").append('<tr><th>Travel Type Selction</th></tr>');
-            // $('#district').append('<tr><th>District Selection</th></tr>');
 
             d3.csv("./data/Origin_Dest_Zones_by_Trip_Purpose_3776.csv", function(data) {
-
               var uniqueTravelType = data.map(data => data.Purpose_Category)
                 .filter((value, index, self) => self.indexOf(value) === index);
-              var unqiueDistrictType = data.map(data => data.DestZoneDistrictTAZ1669EETP)
-                  .filter((value, index, self) => self.indexOf(value) === index);
-              splitDataIntoTravelMatrix(uniqueTravelType,data); 
-              // 
-              // unqiueDistrictType.forEach(function(key){
-              //       $("#districtTable").append('<tr class="clickableRow3"><td>'+key+'</td></tr>');
-              //   });
 
+              splitDataIntoTravelMatrix(uniqueTravelType,data); 
+              //dynamic fill the flowTable based on unique travel type
               uniqueTravelType.forEach(function(key){
                     $("#flowTable").append('<tr class="clickableRow2"><td>'+key+'</td></tr>');
                 });
                     
                 $(".clickableRow2").on("click", function() {
+                  //highlight selected row
                   $("#flowTable tr").removeClass("selected");
                   var rowItem = $(this).children('td').map(function () {
                       return this.innerHTML;
@@ -85,46 +90,44 @@ require([  "esri/geometry/projection","esri/map", "esri/Color", "esri/layers/Gra
                   processData(selectedMatrix,clusterNumber,1);
               });
             });
-            //range slider
-            $("#myRange").change(function(){
+            //range sliders
+            $("#clusterRange").change(function(){
               $("#clusters").val(this.value);
             });
             $("#threadRange").change(function(){
               $("#threadNumber").val(this.value);
             });
+            //map initialization
             map = new Map("map", {
                 center: [-113.4947, 53.5437],
                 zoom: 10,
                 basemap: "gray",
                 minZoom: 3
             });
+            //map toggle
             var toggle = new BasemapToggle({
                map: map,
                basemap: "streets"
              }, "viewDiv");
             toggle.startup();
-            // var travelZoneLayer = new FeatureLayer("https://services8.arcgis.com/FCQ1UtL7vfUUEwH7/arcgis/rest/services/newestTAZ/FeatureServer/0?token=8gOmRemAl8guD3WA_rfLwe50SgsEvaZzIcXIraH9xC3NQPCLraLwcHIkz3osWU-SHUdSKO1N6rCnWDF_CzWLFlFFUCeugETS44f409SsCtX9eC-HoX0dkXZj2vQD1SsboTGNgAzLDtG-BfIv0FnlWBNqq84hC5a6e7lj2Tt1oV8V0WxGiCE7rtaXgxZr18TZur-l_T6gWW2jDh1mt5q0mqty8vc133DvOtg5JhtGm8OTdn9rYtscRKu66B153RYB",{
-            //     mode: FeatureLayer.MODE_SNAPSHOT,
-            //     outFields: ["*"],
-            //     // infoTemplate: template
-            // });
-            // //LRT layer
-            // var lrtFeatureLayer = new FeatureLayer("https://services8.arcgis.com/FCQ1UtL7vfUUEwH7/arcgis/rest/services/LRT/FeatureServer/0?token=8ulK33e1cubPoKiLq5MxH9EpaN_wuyYRrMTiwsYkGKnPgYFbII8tkvV5i9Dk6tz2jVqY-_Zx-0-GXY3DeSVbtpo0NlLxEjFuPwpccMNBTGZwZsVYNrqBui-6DhEyve8rnD3qGPg_2pun9hFotDWSmlWAQn41B_Sop7pr9KLSS64H_CiMRPW0GZ9Bn6gPWkR8d0CZQ6fUoctmBUJp4gvRdf6vroPETCE9zJ2OFUdPto1Xm2pxvDc7Y5mDPT_ZOXbi",{
-            //     mode: FeatureLayer.MODE_SNAPSHOT,
-            //     outFields: ["*"],
-            // });
+            //add geojson district layer
             map.on("load", function () {
               geoJsonLayer1 = new GeojsonLayer({
                  url:"../data/geoInfo/district1669.geojson",
                   id:"geoJsonLayer"
              });
+             map.disableDoubleClickZoom();
              geoJsonLayer1.setInfoTemplate(false);
              map.addLayer(geoJsonLayer1);
-             
-
             });
-            
+            // $('#District').tooltip({
+            //   hide: {
+            //     effect: "explode",
+            //     delay: 250
+            //   }
+            // })
             $('input:radio[name=allOrDistrict]').change(function() {
+              //cluster all districts
               if(this.value==='all'){
                 map.removeLayer(selectedDistrictLayer);
                 dojo.forEach(connections,dojo.disconnect);
@@ -132,11 +135,14 @@ require([  "esri/geometry/projection","esri/map", "esri/Color", "esri/layers/Gra
                 processData(selectedMatrix,clusterNumber,1);
 
               }
+              //cluster single destination district
               else{
-                connections.push(dojo.connect(geoJsonLayer1, 'onClick', MouseClickhighlightGraphic));
+                connections.push(dojo.connect(geoJsonLayer1, 'onDblClick', MouseClickhighlightGraphic));
               }
             });
+            //cluster data when clicking on a district zone
             function MouseClickhighlightGraphic(evt){
+              console.log(evt.which)
               map.removeLayer(selectedDistrictLayer);
               selectedDistrictLayer = new GraphicsLayer({ id: "selectedDistrictLayer" });
               selectedDistrict=evt.graphic.attributes.District;
@@ -150,7 +156,7 @@ require([  "esri/geometry/projection","esri/map", "esri/Color", "esri/layers/Gra
               );              
               var graphic = new Graphic(evt.graphic.geometry, highlightSymbol);   
               selectedDistrictLayer.add(graphic);
-              map.addLayer(selectedDistrictLayer)
+              map.addLayer(selectedDistrictLayer);
               // geoJsonLayer1.setInfoTemplate(true);
               processData(selectedMatrix,clusterNumber,1);
               $("#currentIteration").val("0");
@@ -371,7 +377,10 @@ require([  "esri/geometry/projection","esri/map", "esri/Color", "esri/layers/Gra
                     transitArray.push(travelMatrix[selectedMatrix][d]);
                   }
                 }
-                if(transitArray.length ===0){
+                if(!selectedMatrix){
+                  alert("You haven't select any travel type!");
+                }
+                else if(transitArray.length ===0){
                   alert('No travel in this zone!');
                   return;
                 }
@@ -391,10 +400,9 @@ require([  "esri/geometry/projection","esri/map", "esri/Color", "esri/layers/Gra
                 currentSum+=transitArray[r][4];
                 sumOfTransitArray[r] = currentSum;
               }
+        
               if(transitArray.length<clusterNumber){
-                
                 newCentroid= transitArray;
-                
               }
               else{
                 newCentroid= new Array(clusterNumber);    
@@ -407,8 +415,9 @@ require([  "esri/geometry/projection","esri/map", "esri/Color", "esri/layers/Gra
                             break;
                         }
                     }
-  
                 }
+                //delete empty center
+                newCentroid =newCentroid.filter(function(n){ return n;});
               }
 
 
@@ -644,7 +653,6 @@ require([  "esri/geometry/projection","esri/map", "esri/Color", "esri/layers/Gra
                 var originG = new Graphic(projectedPointOrigin, symbolOrigin, {}, null);
                 var destG = new Graphic(projectedPointDest, symbolDest, {}, null);
                 return [originG,destG];
-
             }
 
         }
@@ -718,7 +726,7 @@ function splitDataIntoTravelMatrix(uniqueTravelType,data){
     var dataOfThisTravelType = [];
     for(var j in data){
       if(data[j].Purpose_Category === thisTravelType){
-        var thisDataArray = [Number(data[j].Origin_XCoord),Number(data[j].Origin_YCoord),Number(data[j].Dest_XCoord),Number(data[j].Dest_YCoord),Number(data[j].Total),data[j].OriginZoneTAZ1669EETP,data[j].DestZoneTAZ1669EETP,data[j].OriginZoneDistrictTAZ1669EETP,data[j].DestZoneDistrictTAZ1669EETP];
+        var thisDataArray = [Number(data[j][csvFileTitle.origin_x]),Number(data[j][csvFileTitle.origin_y]),Number(data[j][csvFileTitle.dest_x]),Number(data[j][csvFileTitle.dest_y]),Number(data[j][csvFileTitle.weight]),data[j][csvFileTitle.origin_zone],data[j][csvFileTitle.dest_zone],data[j][csvFileTitle.origin_district],data[j][csvFileTitle.dest_district]];
         dataOfThisTravelType.push(thisDataArray);
       }
     }

@@ -56,7 +56,7 @@ html
                   fieldset(data-role='controlgroup')
                     label(for='clusters') Number Of Clusters:
                        input(id='clusters',type='text',value='',name='clusters' size="2")
-                       input(type="range" min="10" max="200" value="50"  id="myRange")
+                       input(type="range" min="10" max="200" value="50"  id="clusterRange")
                     label(for='clusters') &nbsp&nbsp&nbsp&nbsp Number Of Threads:
                        input(id = 'threadNumber',type = 'text',value = '4', size = '2')
                        input(type="range" min="2" max="12" value ="4" id="threadRange")
@@ -86,7 +86,7 @@ html
                     label Observation Level:
                       input(type="radio" name="allOrDistrict" id="All" value= 'all' checked)
                       Thing All
-                      input(type="radio" name="allOrDistrict" id="District" value='district')
+                      input(type="radio" name="allOrDistrict" id="District" value='district' title="Double click on map to explore!")
                       Thing District
   
   
