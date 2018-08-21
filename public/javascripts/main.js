@@ -18,6 +18,7 @@ var mapSpatialReference;
 var geoJsonLayer1 ;
 var graphicsLayer;
 var startEndLayer;
+var selectedDistrictLayer;
 var totalWeight;
 var sumOfTransitArray;
 var transitLen;
@@ -125,24 +126,34 @@ require([  "esri/geometry/projection","esri/map", "esri/Color", "esri/layers/Gra
             
             $('input:radio[name=allOrDistrict]').change(function() {
               if(this.value==='all'){
+                map.removeLayer(selectedDistrictLayer);
                 dojo.forEach(connections,dojo.disconnect);
                 selectedDistrict = 'all';
+                processData(selectedMatrix,clusterNumber,1);
+
               }
               else{
                 connections.push(dojo.connect(geoJsonLayer1, 'onClick', MouseClickhighlightGraphic));
-
-                
-
               }
             });
             function MouseClickhighlightGraphic(evt){
-            
+              map.removeLayer(selectedDistrictLayer);
+              selectedDistrictLayer = new GraphicsLayer({ id: "selectedDistrictLayer" });
               selectedDistrict=evt.graphic.attributes.District;
-              geoJsonLayer1.setInfoTemplate(true);
+              var highlightSymbol = new SimpleFillSymbol(
+                SimpleFillSymbol.STYLE_SOLID,
+                new SimpleLineSymbol(
+                  SimpleLineSymbol.STYLE_SOLID,
+                  new Color([0,225,225]), 2
+                ),
+                new Color([0,225,225,0.5])
+              );              
+              var graphic = new Graphic(evt.graphic.geometry, highlightSymbol);   
+              selectedDistrictLayer.add(graphic);
+              map.addLayer(selectedDistrictLayer)
+              // geoJsonLayer1.setInfoTemplate(true);
               processData(selectedMatrix,clusterNumber,1);
-              $("#currentIteration").val("0")
-              
-              
+              $("#currentIteration").val("0");
             }
             
             on(map, "update-start", showLoading);
@@ -158,6 +169,8 @@ require([  "esri/geometry/projection","esri/map", "esri/Color", "esri/layers/Gra
             
             graphicsLayer = new GraphicsLayer({ id: "graphicsLayer" });
             startEndLayer = new GraphicsLayer({ id: "startEndLayer" });
+            selectedDistrictLayer = new GraphicsLayer({ id: "selectedDistrictLayer" });
+
             myCounter = new Variable(0,function(){
               if($('#currentIteration').val()<200){
                 result = splitIntoGroups();
@@ -198,7 +211,6 @@ require([  "esri/geometry/projection","esri/map", "esri/Color", "esri/layers/Gra
                         for (var h2 =0;h2<transitArrayWithClusters[clickedGroup].length;h2++){
                           var line = transitArrayWithClusters[clickedGroup][h2];
                           var ag = startEndLines(line);
-                          console.log(ag)
                           if(ag !== null){
                             startEndLayer.add(ag);
                           }
@@ -338,7 +350,6 @@ require([  "esri/geometry/projection","esri/map", "esri/Color", "esri/layers/Gra
             });
 
             function processData(selectedMatrix,clusterNumber,iteration) {
-              console.log(selectedDistrict)
               $("#nextIteration").prop('disabled', true);
               $("#RerunButton").prop('disabled', true);
               $("#autoRun").prop('disabled', true);
@@ -360,7 +371,10 @@ require([  "esri/geometry/projection","esri/map", "esri/Color", "esri/layers/Gra
                     transitArray.push(travelMatrix[selectedMatrix][d]);
                   }
                 }
-                console.log(transitArray)
+                if(transitArray.length ===0){
+                  alert('No travel in this zone!');
+                  return;
+                }
                 for(var i = 0, l = transitArray.length; i<l;i++){
                   totalWeight += transitArray[i][4];
                 }
@@ -377,17 +391,27 @@ require([  "esri/geometry/projection","esri/map", "esri/Color", "esri/layers/Gra
                 currentSum+=transitArray[r][4];
                 sumOfTransitArray[r] = currentSum;
               }
-              newCentroid= new Array(clusterNumber);
-              for(var i2 = 0;i2<clusterNumber;i2++){
-                  var randomWeight = Math.floor(Math.random()*(totalWeight));
-                  for (var i3=0;i3<totalTransitLength;i3++){
-                      if(sumOfTransitArray[i3]>=randomWeight && newCentroid.indexOf(transitArray[i3])< 0) {
-                          newCentroid[i2] = transitArray[i3];
-                          break;
-                      }
-                  }
-
+              if(transitArray.length<clusterNumber){
+                
+                newCentroid= transitArray;
+                
               }
+              else{
+                newCentroid= new Array(clusterNumber);    
+                
+                for(var i2 = 0;i2<newCentroid.length;i2++){
+                    var randomWeight = Math.floor(Math.random()*(totalWeight));
+                    for (var i3=0;i3<totalTransitLength;i3++){
+                        if(sumOfTransitArray[i3]>=randomWeight && newCentroid.indexOf(transitArray[i3])< 0) {
+                            newCentroid[i2] = transitArray[i3];
+                            break;
+                        }
+                    }
+  
+                }
+              }
+
+
               if(transitArray.length>0){
                   result = splitIntoGroups();
               }
@@ -401,13 +425,14 @@ require([  "esri/geometry/projection","esri/map", "esri/Color", "esri/layers/Gra
           for(var m=0,l=newCentroid.length;m<l;m++){
             transitArrayWithClusters[JSON.stringify(m)] = [];
           }
+
           var num_threads = Number($("#threadNumber").val());
           var c = 0;
           var MT = new Multithread(num_threads);
           
           var funcInADifferentThread = MT.process(
             function(newCentroid,transitArray,index){
-    
+              
               var result = new Array(transitArray.length);
 
 
@@ -554,7 +579,7 @@ require([  "esri/geometry/projection","esri/map", "esri/Color", "esri/layers/Gra
           }
         }
         function startEndDots(line){
-            var adjustedSize=line[4]*27/ratio;
+            var adjustedSize=line[4]*25/ratio;
             //the data has huge gap, will eliminate very small ones.
 
             if(adjustedSize<0.5&&adjustedSize>0.05){
@@ -632,11 +657,11 @@ require([  "esri/geometry/projection","esri/map", "esri/Color", "esri/layers/Gra
             const projectedPointDest = projection.project(pointDest, viewSpatialReference);
             var infoTemplate = new InfoTemplate("Value: ${value}","Origin Zone: ${inZone}<br/>Destination Zone:${outZone}");
 
-            if(centroidWidth>0.05){
+            if(centroidWidth*8>0.01){
                 if(line[5]===line[6]){
                     var squareSymbol = new SimpleMarkerSymbol({
                         "color":[0,0,128,128],
-                        "size":centroidWidth*25,
+                        "size":centroidWidth*6,
                         "angle":0,
                         "xoffset":0,
                         "yoffset":0,
@@ -661,11 +686,11 @@ require([  "esri/geometry/projection","esri/map", "esri/Color", "esri/layers/Gra
                     var advSymbol = new DirectionalLineSymbol({
                         style: SimpleLineSymbol.STYLE_SOLID,
                         color: new Color([0,0,204]),
-                        width: centroidWidth,
+                        width: centroidWidth/2,
                         directionSymbol: "arrow1",
                         directionPixelBuffer: 12,
                         directionColor: new Color([0,0,204]),
-                        directionSize: centroidWidth*5
+                        directionSize: centroidWidth*2.5
                     });
                     var polylineJson = {
                         "paths":[[ [projectedPointOrigin.x, projectedPointOrigin.y], [ projectedPointDest.x, projectedPointDest.y] ] ]
@@ -690,15 +715,13 @@ require([  "esri/geometry/projection","esri/map", "esri/Color", "esri/layers/Gra
 function splitDataIntoTravelMatrix(uniqueTravelType,data){
   for(var i=0;i<uniqueTravelType.length;i++){
     var thisTravelType = uniqueTravelType[i];
-    var dataOfThisTravelType = []
+    var dataOfThisTravelType = [];
     for(var j in data){
       if(data[j].Purpose_Category === thisTravelType){
-        var thisDataArray = [Number(data[j].Origin_XCoord),Number(data[j].Origin_YCoord),Number(data[j].Dest_XCoord),Number(data[j].Dest_YCoord),Number(data[j].Total),data[j].OriginZoneTAZ1669EETP,data[j].DestZoneTAZ1669EETP,data[j].OriginZoneDistrictTAZ1669EETP,data[j].DestZoneDistrictTAZ1669EETP]
+        var thisDataArray = [Number(data[j].Origin_XCoord),Number(data[j].Origin_YCoord),Number(data[j].Dest_XCoord),Number(data[j].Dest_YCoord),Number(data[j].Total),data[j].OriginZoneTAZ1669EETP,data[j].DestZoneTAZ1669EETP,data[j].OriginZoneDistrictTAZ1669EETP,data[j].DestZoneDistrictTAZ1669EETP];
         dataOfThisTravelType.push(thisDataArray);
       }
     }
     travelMatrix[thisTravelType] = dataOfThisTravelType;
-    
-    
   }
 }
