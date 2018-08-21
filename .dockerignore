@@ -1,0 +1,9 @@
+#
+# Flow_Cluster_Tool/.dockerignore ---
+#
+# stuff not to put in the build image.
+**/*.omx
+.git/**
+public/data/compressed/**/*
+public/data/uncompressed/**/*
+ve/**

@@ -1,0 +1,109 @@
+doctype html
+html
+    head
+        link(rel="shortcut icon" href="")
+        script(src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js")
+        script(src="https://d3js.org/d3.v4.min.js")
+        script(src="https://js.arcgis.com/3.25/")
+        script(src='./externalJS/multithread.js')
+        script(src = './javascripts/table.js')
+        script(src = './javascripts/fct_version_info.js')
+        script(src="./vendor/terraformer/terraformer.min.js")
+        script(src="./vendor/terraformer-arcgis-parser/terraformer-arcgis-parser.min.js")
+        title= title
+        link(rel='stylesheet', href='/stylesheets/style.css')
+        link(rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.0/themes/blitzer/jquery-ui.css" type="text/css")
+        link(rel="stylesheet" href="http://js.arcgis.com/3.25/esri/css/esri.css" type="text/css")
+        link(rel="stylesheet" href="http://js.arcgis.com/3.25/dijit/themes/claro/claro.css")
+    body
+        block content
+
+          h1= title
+          //p Welcome to #{title}
+          div(id = "infoDiv")
+            p Scenario: <em id = 'scenario_info'>ddd</em>&nbsp&nbsp&nbsp 
+            p Year: <em id = 'year_info'></em>&nbsp&nbsp&nbsp 
+            p Version: <em id = 'version_info'></em>&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+            p App Version: <em id="fct_version_info">3:06AM 8/10/2018</em> 
+          div(id = "map")
+            div(id="viewDiv")
+
+          div(id = "legendDiv")
+            fieldset(data-role='controlgroup')
+              legend Legend
+
+              div(id = "arrow-left2" class="clustered-line arrow-left2")
+              div(class = "clustered-line" id = "clustered-line")
+                Thing Clustered flow
+              br
+              div(id = "arrow-left" class="single-line arrow-left")
+              div(class = "single-line" id = "single-line")
+                Thing Single flow
+              br
+              input(type = "text",id="circleOrigin")
+              Thing Origin point
+              br
+              input(type = "text",id="circleDest")
+              Thing Destination point
+              br
+
+          div(id = "blockContainer")
+            div(id="infoDiv")
+              div(id = "containerw")
+                fieldset(id = "containerField")
+                  input( type="Button" id = "WantJson" value="Create a GeoJson file ")
+                div(class = "controlPanel" data-role='fieldcontain')
+                  fieldset(data-role='controlgroup')
+                    label(for='clusters') Number Of Clusters:
+                       input(id='clusters',type='text',value='',name='clusters' size="2")
+                       input(type="range" min="10" max="200" value="50"  id="myRange")
+                    label(for='clusters') &nbsp&nbsp&nbsp&nbsp Number Of Threads:
+                       input(id = 'threadNumber',type = 'text',value = '4', size = '2')
+                       input(type="range" min="2" max="12" value ="4" id="threadRange")
+                       input( type="Button" id = "RerunButton" value="Run again ")
+
+
+
+                div(class = "controlPanel")
+                  fieldset(data-role='controlgroup')
+                    label(for='clusters') Current Iteration:
+                      input(type = "integer", id = "currentIteration" value = "0",name = "iteration" size="2")
+                      input( type = "Button" id = "nextIteration",value = "Run next iteration")
+                      label(class="switch")
+                         input(type="checkbox" id = "autoRun")
+                         span(class="slider")
+
+
+                div(class = "controlPanel")
+                  fieldset(data-role='radiogroup')
+                    label(for='clusters') Single Flow Format:
+                      input(type="radio" name="dotsOrLines" id="dots")
+                      Thing Dots
+                      input(type="radio" name="dotsOrLines" id="lines" checked)
+                      Thing Lines
+                div(class = "controlPanel")
+                  fieldset(data-role='radiogroup')
+                    label Observation Level:
+                      input(type="radio" name="allOrDistrict" id="All" value= 'all' checked)
+                      Thing All
+                      input(type="radio" name="allOrDistrict" id="District" value='district')
+                      Thing District
+  
+  
+            //- div(id = "unusedDataDiv")
+            //-   table(id = "dataTable0" border="1" class="table table-bordered table-condensed table-striped table-hover")
+            div(id = "dataDiv")
+              table(id = "dataTable" border="1" class="table table-bordered table-condensed table-striped table-hover")
+            div(id = "flowDiv")
+              table(id = "flowTable" border="1" class="table table-bordered table-condensed table-striped table-hover")
+            //- div(id = "district")
+            //-   table(id = "districtTable" border="1" class="table table-bordered table-condensed table-striped table-hover")
+              
+          script(type="text/javascript" src="/javascripts/main.js")
+
+
+          script.
+              //console.log($('#map').attr('id'))
+              //pass data to frontend from backend
+              var user = !{JSON.stringify(title)};
+              //var luz_data = !{JSON.stringify(luz_data)};

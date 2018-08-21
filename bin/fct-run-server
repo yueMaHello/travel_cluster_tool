@@ -1,0 +1,24 @@
+#!/bin/bash
+#
+# Flow_Cluster_Tool/bin/fct-run-server ---
+#
+
+SCRIPT_DIR=$(builtin cd $(dirname ${BASH_SOURCE[0]}) ; builtin pwd)
+
+# Linux calls it "nodejs"
+nodejs_exe=$(type -p nodejs)
+if [[ "${nodejs_exe}" != "" ]]
+then
+  exec "${nodejs_exe}" ${SCRIPT_DIR}/fct-run-server.js "${@}"
+fi
+
+# OSX/brew calls it "node"
+node_exe=$(type -p node)
+if [[ "${node_exe}" != "" ]]
+then
+  exec "${node_exe}" ${SCRIPT_DIR}/fct-run-server.js "${@}"
+fi
+
+# Didnt find either.
+echo "${0}: didnt find 'nodejs' or 'node'."
+exit 1

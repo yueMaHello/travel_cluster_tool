@@ -1,0 +1,79 @@
+body {
+    background:url("/images/grey-map-canada.jpg");
+    background-size:cover;
+}
+
+.selectOMX{
+
+    position:relative;
+    text-align:center;
+}
+p {
+  margin-top:-40px;
+}
+
+#selectScenario{
+
+
+    margin-top:150px;
+}
+
+#newOMXForm{
+
+    position:relative;
+    text-align: center;
+    margin-top:150px;
+}
+#selectionForm{
+  visibility: hidden;
+}
+
+form input{
+    width:50px;
+}
+
+
+#omxDiv{
+    position:fixed;
+    left:200px;
+    top:300px;
+    z-index:1000;
+}
+
+table#omxTable {
+    border-collapse: collapse;
+}
+#omxTable tr {
+    background-color: #eee;
+    border-top: 1px solid #fff;
+}
+#omxTable tr:hover {
+    background-color: #ccc;
+}
+
+#omxTable th {
+    background-color: #fff;
+}
+#omxTable th, #omxTable td {
+    padding: 3px 5px;
+}
+#omxTable td:hover {
+    cursor: pointer;
+}
+#omxTable{
+    height:190px; overflow-y:scroll; display:block;width:200px;
+}
+
+#omxTable tr.selected td {
+    background-color:	#696969	;
+    color: #FFFFFF;
+}
+h1{
+    margin-top:-10px;
+    padding:30px;
+    background-color: white
+
+}
+/* #newOMXForm{
+    visibility: hidden;
+} */

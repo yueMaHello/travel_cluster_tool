@@ -1,0 +1,6 @@
+#!/bin/bash
+#
+# Flow_Cluster_Tool/bin/fct-decode-omx ---
+#
+
+exec python ${FCT_DIR}/public/python/decode_omx.py "${@}"
