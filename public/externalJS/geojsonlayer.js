@@ -76,7 +76,7 @@ define([
                     case "red":
                         return new Color([getRandomInt(150, 255), getRandomInt(0, 255), getRandomInt(0, 255), transparency]);
                     case "green":
-                        return new Color([getRandomInt(0, 155), getRandomInt(150, 255), getRandomInt(0, 155), transparency]);
+                        return new Color([0,255,0, transparency]);
                     case "blue":
                         return new Color([getRandomInt(0, 255), getRandomInt(0, 255), getRandomInt(150, 255), transparency]);
                 }
@@ -87,8 +87,8 @@ define([
                 getRandomColor("blue", 0.75));
             this._simpleLineSym = new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID, getRandomColor("red", 0.9), 2);
             this._simplePolygonSym = new SimpleFillSymbol("solid",
-                new SimpleLineSymbol("solid", new Color([50, 50, 50, 0.15]), 1),
-                getRandomColor("green", 0.15));
+                new SimpleLineSymbol("solid", new Color([50, 50, 50, 0.50]), 1),
+                getRandomColor("green", 0.4));
             // Option to hardcod colors here
             // this._simplePointSym = new SimpleMarkerSymbol(SimpleMarkerSymbol.STYLE_CIRCLE, 8,
             //      new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID, new Color([150, 150, 150]), 0.5),

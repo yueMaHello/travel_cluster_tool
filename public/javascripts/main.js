@@ -339,6 +339,10 @@ require(["esri/geometry/projection","esri/map", "esri/Color", "esri/layers/Graph
                 map.disableMapNavigation();
                 map.hideZoomSlider();
                if(Number($("#clusters").val())>0){
+                 if(transitArray.length<clusterNumber){
+                   newCentroid= transitArray;
+                 }
+                 else{
                  clusterNumber =Number($("#clusters").val());
 
                    newCentroid = new Array(clusterNumber);
@@ -351,8 +355,11 @@ require(["esri/geometry/projection","esri/map", "esri/Color", "esri/layers/Graph
                            }
                        }
                    }
-
-                 result = splitIntoGroups();
+                 }
+   
+                 if(transitArray.length>0){
+                     result = splitIntoGroups();
+                 }
                }
              else{
                alert("Please enter a number!");
