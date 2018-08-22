@@ -1,3 +1,4 @@
+//make the table sortable
 function sortTable(n,tableId) {
   var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
   table = tableId;
