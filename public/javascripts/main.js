@@ -25,6 +25,8 @@ var transitAngle;
 var travelMatrix={};
 var selectedDistrict='all';
 var connections = [];
+//If your csvfile's  title changes, just change values in this Object. 
+//Don't need to change other code 
 var csvFileTitle = {
   origin_zone:"OriginZoneTAZ1669EETP",
   origin_district:"OriginZoneDistrictTAZ1669EETP",
@@ -120,12 +122,7 @@ require(["esri/geometry/projection","esri/map", "esri/Color", "esri/layers/Graph
              geoJsonLayer1.setInfoTemplate(false);
              map.addLayer(geoJsonLayer1);
             });
-            // $('#District').tooltip({
-            //   hide: {
-            //     effect: "explode",
-            //     delay: 250
-            //   }
-            // })
+            //get notification if radio buttons are clicked
             $('input:radio[name=allOrDistrict]').change(function() {
               //cluster all districts
               if(this.value==='all'){
@@ -157,13 +154,14 @@ require(["esri/geometry/projection","esri/map", "esri/Color", "esri/layers/Graph
               var graphic = new Graphic(evt.graphic.geometry, highlightSymbol);   
               selectedDistrictLayer.add(graphic);
               map.addLayer(selectedDistrictLayer);
-              // geoJsonLayer1.setInfoTemplate(true);
               processData(selectedMatrix,clusterNumber,1);
               $("#currentIteration").val("0");
             }
-            
+            //disable the map navigation when loading data
             on(map, "update-start", showLoading);
+            //enable the map navigation when finish loading
             on(map, "update-end", hideLoading);
+            
             function showLoading() {
               map.disableMapNavigation();
               map.hideZoomSlider();
@@ -191,18 +189,25 @@ require(["esri/geometry/projection","esri/map", "esri/Color", "esri/layers/Graph
                 $("#autoRun").click();
               }
             });
+            //myVar use the self-defined Variable as its type
+            //It has a initial value:10. Actually, the number does nothing.
+            //If myVar.SetValue(...) is called, then the function() wrote in myVar will be called. 
+            //myVar is like a monitor monitoring the Kmeans process
+            //After each iteration of Kmeans, myVar will change the Map
             myVar = new Variable(10, function(){
+                  //clean the map
                   map.removeLayer(graphicsLayer);
                   map.removeLayer(startEndLayer);
                   graphicsLayer = new GraphicsLayer({ id: "graphicsLayer" });
+                  //readd the clustered lines
                   map.addLayer(graphicsLayer);
+                  //each clusted line should have a group of single lines
                   graphicsLayer.on("click",function(evt){
-
                     var clickedGroup = evt.graphic.attributes.indexOfGroup;
                     if(typeof(clickedGroup)!=="undefined"){
                       map.removeLayer(startEndLayer);
-
-                        startEndLayer = new GraphicsLayer({ id: "startEndLayer" });
+                      startEndLayer = new GraphicsLayer({ id: "startEndLayer" });
+                      //draw dots
                       if($("#dots").is(':checked') === true){
                         for (var h =0;h<transitArrayWithClusters[clickedGroup].length;h++){
                           var orginDest = startEndDots(transitArrayWithClusters[clickedGroup][h]);
@@ -213,6 +218,7 @@ require(["esri/geometry/projection","esri/map", "esri/Color", "esri/layers/Graph
                           }
                         }
                       }
+                      //draw lines
                       else if($("#lines").is(':checked') === true){
                         for (var h2 =0;h2<transitArrayWithClusters[clickedGroup].length;h2++){
                           var line = transitArrayWithClusters[clickedGroup][h2];
@@ -227,7 +233,7 @@ require(["esri/geometry/projection","esri/map", "esri/Color", "esri/layers/Graph
                          alert("Some error happens, please try to refresh the page!");
                        }
                       map.addLayer(startEndLayer);
-                      
+                      //renew the data table
                       $("#dataTable tr").remove();
                       $("#dataTable").append('<tr><th onclick="sortTable(0,dataTable)">Origin Zone    </th><th onclick="sortTable(1,dataTable)">Destination Zone   </th><th onclick="sortTable(2,dataTable)">Value</th></tr>');
     
@@ -270,16 +276,12 @@ require(["esri/geometry/projection","esri/map", "esri/Color", "esri/layers/Graph
                       }
                   }
                 });
-    
-                  //example using a picture marker symbol.
-                if(myVar.GetValue() === 1){
-                    currentIteration = Number($('#currentIteration').val())+1;
-                    $('#currentIteration').val(currentIteration);
-                }
-
-                  //add a polyline with 3 paths
+                  
+                  if(myVar.GetValue() === 1){
+                      currentIteration = Number($('#currentIteration').val())+1;
+                      $('#currentIteration').val(currentIteration);
+                  }
                   redrawClusters(newCentroid,graphicsLayer);
-
                   if($("#autoRun").is(':checked') === true){
                     myCounter.SetValue(1);
                   }
@@ -292,6 +294,7 @@ require(["esri/geometry/projection","esri/map", "esri/Color", "esri/layers/Graph
                     map.showZoomSlider();    
                   }
             });
+            //run nextIteration
             $("#nextIteration").click(function(){
               $("#nextIteration").prop('disabled', true);
               $("#RerunButton").prop('disabled', true);
@@ -300,8 +303,8 @@ require(["esri/geometry/projection","esri/map", "esri/Color", "esri/layers/Graph
               map.disableMapNavigation();
               map.hideZoomSlider();
               result = splitIntoGroups();
-              // newCentroid = findNewCentroid(result);
             });
+            //run autoRun
             $("#autoRun").click(function(e, parameters) {
                 
                 if($("#autoRun").is(':checked')){
@@ -314,7 +317,7 @@ require(["esri/geometry/projection","esri/map", "esri/Color", "esri/layers/Graph
                   result = splitIntoGroups();
                 }
             });
-
+            //generate geojson file
             $("#WantJson").click(function(){
               var outputGeoJsonFile = outputGeojson(newCentroid);
               var data = JSON.stringify(outputGeoJsonFile,undefined,4);
@@ -326,6 +329,7 @@ require(["esri/geometry/projection","esri/map", "esri/Color", "esri/layers/Graph
               a.innerHTML = 'Download JSON';
               a.click();
             });
+            //Rerun kmeans
             $("#RerunButton").click(function(){
                 $("#currentIteration").val("0");
                 $("#nextIteration").prop('disabled', true);
@@ -354,13 +358,15 @@ require(["esri/geometry/projection","esri/map", "esri/Color", "esri/layers/Graph
                alert("Please enter a number!");
              }
             });
-
+            //process kmeans 
             function processData(selectedMatrix,clusterNumber,iteration) {
               $("#nextIteration").prop('disabled', true);
               $("#RerunButton").prop('disabled', true);
               $("#autoRun").prop('disabled', true);
               $("#WantJson").prop('disabled', true);
-              
+              //kmeans initialization. This is different from traditional Kmeans. 
+              //It gives a higher possibility to lines with a higher weight to be choosen as a initial cluster center
+              //the algorithm is based on https://medium.com/@peterkellyonline/weighted-random-selection-3ff222917eb6
               if(selectedDistrict==='all'){
                 totalWeight=0;
                 transitArray = travelMatrix[selectedMatrix];
@@ -387,13 +393,9 @@ require(["esri/geometry/projection","esri/map", "esri/Color", "esri/layers/Graph
                 for(var i = 0, l = transitArray.length; i<l;i++){
                   totalWeight += transitArray[i][4];
                 }
-              }
-
-          
-    
+              }    
               //initialization
               var totalTransitLength = transitArray.length;
-
               var currentSum = 0;
               sumOfTransitArray = new Array(transitArray.length);
               for(var r = 0;r<totalTransitLength;r++){
@@ -427,24 +429,22 @@ require(["esri/geometry/projection","esri/map", "esri/Color", "esri/layers/Graph
             
               }
         });
-
+        //calculate the distance between each line and each cluster center.
+        //split lines into n cluster groups
         function splitIntoGroups(){
-  
           transitArrayWithClusters=[];
           for(var m=0,l=newCentroid.length;m<l;m++){
             transitArrayWithClusters[JSON.stringify(m)] = [];
           }
-
+          //multithread calculation
           var num_threads = Number($("#threadNumber").val());
           var c = 0;
           var MT = new Multithread(num_threads);
-          
+          //in each thread
           var funcInADifferentThread = MT.process(
             function(newCentroid,transitArray,index){
               
               var result = new Array(transitArray.length);
-
-
               for(var i=0,l1=transitArray.length;i<l1;i++){
 
                 var group = 0;
@@ -468,43 +468,36 @@ require(["esri/geometry/projection","esri/map", "esri/Color", "esri/layers/Graph
 
               return [index,result];
             },
+            //result after the thread finishing calculation
             function(r) {
+              //c is counter to count how many threads have finished
               c+=1;
               for(var t4=0;t4<GroupArray[r[0]].length;t4++){
+                //fill the transitArrayWithClusters array
                 transitArrayWithClusters[JSON.stringify(r[1][t4])].push(GroupArray[r[0]][t4]);
               }
               if(c=== num_threads){
+                  //all threads have finished
                   newCentroid = findNewCentroid(transitArrayWithClusters);
+                  //call function stored in myVar
                   myVar.SetValue(1);
               }
             }
           );
-
+          //split the array into 'num_threads' groups
           var averageLength = transitArray.length/num_threads;
           var GroupArray = new Array(num_threads);
 
           for(var i = 0; i<num_threads; i++){
             GroupArray[i] = transitArray.slice(averageLength*i,averageLength*(i+1));
-
           }
+          //call each threads
           for(var j=0; j<num_threads;j++){
              funcInADifferentThread(newCentroid,GroupArray[j],j);
           }
         }
-        function Variable(initVal, onChange)
-        {
-            this.val = initVal;          //Value to be stored in this object
-            this.onChange = onChange;    //OnChange handler
-            //This method returns stored value
-            this.GetValue = function(){
-                return this.val;};
-            //This method changes the value and calls the given handler
-            this.SetValue = function(value){
-                this.val = value;
-                this.onChange();};
-        }
+        //after spliting into groups, calculate the new center for each group
         function findNewCentroid(transitArrayWithClusters){
-
           newCentroid = [];
           for(var key in transitArrayWithClusters){
             var weight = 0,dest_x = 0,dest_y = 0,orig_x = 0,orig_y = 0;
@@ -524,7 +517,7 @@ require(["esri/geometry/projection","esri/map", "esri/Color", "esri/layers/Graph
           }
           return newCentroid;
         }
-
+        //generate geojson file which can be used in QGIS
         function outputGeojson(centroids){
           var geojson =
              {"name":"NewFeatureType",
@@ -543,6 +536,7 @@ require(["esri/geometry/projection","esri/map", "esri/Color", "esri/layers/Graph
           }
           return geojson;
         }
+        //renew the map
         function redrawClusters(newCentroid,graphicsLayer){
           var maxWidth = 0;
           for(var p=0,l=newCentroid.length;p<l;p++){
@@ -560,12 +554,13 @@ require(["esri/geometry/projection","esri/map", "esri/Color", "esri/layers/Graph
           for(var j = 0,k= newCentroid.length;j<k;j++){
             var centroidWidth;
             centroidWidth = newCentroid[j][4]/ratio;
-            // console.log(newCentroid[j][0])
+            //convert geo position between different EPSG
+            //EPSG3776 can't plot on the map directly, needing to be converted to EPSG4326
             const pointOrigin = new Point([newCentroid[j][0], newCentroid[j][1]], geoSpatialReference);
             const pointDest = new Point([newCentroid[j][2], newCentroid[j][3]], geoSpatialReference);
             const projectedPointOrigin = projection.project(pointOrigin, viewSpatialReference);
             const projectedPointDest = projection.project(pointDest, viewSpatialReference);
-  
+            //eliminate small lines which width <0.05
             if(centroidWidth>0.05){
               var advSymbol = new DirectionalLineSymbol({
                   style: SimpleLineSymbol.STYLE_SOLID,
@@ -587,7 +582,9 @@ require(["esri/geometry/projection","esri/map", "esri/Color", "esri/layers/Graph
             }
           }
         }
+        //if user select 'dots' to observe
         function startEndDots(line){
+            //it will adjust the size based on current dataset automatically
             var adjustedSize=line[4]*25/ratio;
             //the data has huge gap, will eliminate very small ones.
 
@@ -656,6 +653,7 @@ require(["esri/geometry/projection","esri/map", "esri/Color", "esri/layers/Graph
             }
 
         }
+        //if user select 'lines' to observe
         function startEndLines(line){
             var centroidWidth;
             centroidWidth = line[4]*4/ratio;
@@ -685,12 +683,7 @@ require(["esri/geometry/projection","esri/map", "esri/Color", "esri/layers/Graph
                     return originG;
                 }
                 else{
-                  
-                  // var lineSymbol = new SimpleLineSymbol()
-                  //   lineSymbol.setMarker({
-                  //     style: "arrow",
-                  //     placement: "end"
-                  //   });
+
                     var advSymbol = new DirectionalLineSymbol({
                         style: SimpleLineSymbol.STYLE_SOLID,
                         color: new Color([0,0,204]),
@@ -710,16 +703,10 @@ require(["esri/geometry/projection","esri/map", "esri/Color", "esri/layers/Graph
             }
             else{
                 return null;
-
             }
-      
         }
-        // geoJsonLayer1.on('click',function(e){
-        //   console.log(e)
-        // })
-
   });
-    
+//split csv file into several matrices based on travelpurpose    
 function splitDataIntoTravelMatrix(uniqueTravelType,data){
   for(var i=0;i<uniqueTravelType.length;i++){
     var thisTravelType = uniqueTravelType[i];
@@ -732,4 +719,19 @@ function splitDataIntoTravelMatrix(uniqueTravelType,data){
     }
     travelMatrix[thisTravelType] = dataOfThisTravelType;
   }
+}
+//this is a self defined Varaible
+//If the Varaible's name is changed, then it will call the onChange function.
+//you can treat it as a monitor
+function Variable(initVal, onChange)
+{
+    this.val = initVal;          //Value to be stored in this object
+    this.onChange = onChange;    //OnChange handler
+    //This method returns stored value
+    this.GetValue = function(){
+        return this.val;};
+    //This method changes the value and calls the given handler
+    this.SetValue = function(value){
+        this.val = value;
+        this.onChange();};
 }
