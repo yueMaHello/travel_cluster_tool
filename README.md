@@ -9,16 +9,16 @@ web application(with some python scripts). The Weighted-Kmeans algorithm is used
 ### From GitHub
 1. Download the folder
 2. Go to the root of the folder, and run some npm commands in the terminal/cmd. If 'npm' is not found, then you may need to install nodejs first...
-    1. npm install
-    2. npm install --save express
-    3. npm install --save Blob
-    4. npm install --save child-process
-    5. npm install --save http-errors
-    6. npm install --save jade
-    7. npm install --save jsdom
-    8. npm install --save morgan
-    9. npm install --save fs
-    10. npm install --save socket.io
+    npm install
+    npm install --save express
+    npm install --save Blob
+    npm install --save child-process
+    npm install --save http-errors
+    npm install --save jade
+    npm install --save jsdom
+    npm install --save morgan
+    npm install --save fs
+    npm install --save socket.io
    
 ### From Lab Computer I
 1. Go to the root foler './Travel_Cluster_Tool'
