@@ -23,7 +23,7 @@ var sumOfTransitArray;
 var transitLen;
 var transitAngle;
 var travelMatrix={};
-var selectedDistrict='district';
+var selectedDistrict='district'; 
 var connections = [];
 //If your csvfile's  title changes, just change values in this Object. 
 //Don't need to change other code 
@@ -145,10 +145,10 @@ require(["esri/geometry/projection","esri/map", "esri/Color", "esri/layers/Graph
             });
             //cluster data when clicking on a district zone
             function MouseClickhighlightGraphic(evt){
-              console.log(evt.which)
               map.removeLayer(selectedDistrictLayer);
               selectedDistrictLayer = new GraphicsLayer({ id: "selectedDistrictLayer" });
               selectedDistrict=evt.graphic.attributes.District;
+              console.log(selectedDistrict)
               var highlightSymbol = new SimpleFillSymbol(
                 SimpleFillSymbol.STYLE_SOLID,
                 new SimpleLineSymbol(
@@ -360,7 +360,7 @@ require(["esri/geometry/projection","esri/map", "esri/Color", "esri/layers/Graph
                 totalWeight=0;
                 transitArray = [];
                 for(var d in travelMatrix[selectedMatrix]){
-            
+              // console.log(selectedDistrict)
                   if(Number(travelMatrix[selectedMatrix][d][8]) === Number(selectedDistrict)){
                     transitArray.push(travelMatrix[selectedMatrix][d]);
                   }
@@ -368,7 +368,12 @@ require(["esri/geometry/projection","esri/map", "esri/Color", "esri/layers/Graph
                 if(!selectedMatrix){
                   alert("You haven't select any travel type!");
                 }
+                else if(selectedDistrict ==='district'){
+                  
+                    alert('Please double click on a zone!');
+                }
                 else if(transitArray.length ===0){
+                
                   alert('No travel in this zone!');
                   return;
                 }
@@ -383,8 +388,7 @@ require(["esri/geometry/projection","esri/map", "esri/Color", "esri/layers/Graph
               for(var r = 0;r<totalTransitLength;r++){
                 currentSum+=transitArray[r][4];
                 sumOfTransitArray[r] = currentSum;
-              }
-        
+              }        
               if(transitArray.length<clusterNumber){
                 newCentroid= transitArray;
               }
@@ -402,8 +406,6 @@ require(["esri/geometry/projection","esri/map", "esri/Color", "esri/layers/Graph
                 //delete empty center
                 newCentroid =newCentroid.filter(function(n){ return n;});
               }
-
-
               if(transitArray.length>0){
                   result = splitIntoGroups();
               }
