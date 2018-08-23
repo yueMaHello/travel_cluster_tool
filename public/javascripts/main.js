@@ -67,7 +67,7 @@ require(["esri/geometry/projection","esri/map", "esri/Color", "esri/layers/Graph
             $("#flowTable tr").remove();
             $("#flowTable").append('<tr><th>Travel Type Selction</th></tr>');
 
-            d3.csv("./data/Origin_Dest_Zones_by_Trip_Purpose_3776.csv", function(data) {
+            d3.csv("./data/Origin_Dest_Zones_by_Trip_Purpose_Region_3776.csv", function(data) {
               var uniqueTravelType = data.map(data => data.Purpose_Category)
                 .filter((value, index, self) => self.indexOf(value) === index);
 
@@ -84,12 +84,13 @@ require(["esri/geometry/projection","esri/map", "esri/Color", "esri/layers/Graph
                       return this.innerHTML;
                   }).toArray();
                   $(this).addClass("selected");
-                  
                   selectedMatrix=rowItem[0];
                   $("#clusters").val(defaultClusterNumber);
                   clusterNumber = defaultClusterNumber;
                   $('#currentIteration').val(0);
-                  processData(selectedMatrix,clusterNumber,1);
+                  connections.push(dojo.connect(geoJsonLayer1, 'onDblClick', MouseClickhighlightGraphic));
+
+                  // processData(selectedMatrix,clusterNumber,1);
               });
             });
             //range sliders
@@ -122,7 +123,11 @@ require(["esri/geometry/projection","esri/map", "esri/Color", "esri/layers/Graph
              geoJsonLayer1.setInfoTemplate(false);
              map.addLayer(geoJsonLayer1);
             });
+            
+
+            
             //get notification if radio buttons are clicked
+            
             $('input:radio[name=allOrDistrict]').change(function() {
               //cluster all districts
               if(this.value==='all'){
@@ -234,21 +239,21 @@ require(["esri/geometry/projection","esri/map", "esri/Color", "esri/layers/Graph
                        }
                       map.addLayer(startEndLayer);
                       //renew the data table
-                      $("#dataTable tr").remove();
-                      $("#dataTable").append('<tr><th onclick="sortTable(0,dataTable)">Origin Zone    </th><th onclick="sortTable(1,dataTable)">Destination Zone   </th><th onclick="sortTable(2,dataTable)">Value</th></tr>');
-    
-                      for (var u =0;u<transitArrayWithClusters[clickedGroup].length;u++){
-                        if(transitArrayWithClusters[clickedGroup][u][4]/ratio>=0.05){
-                          $("#dataTable").append('<tr class="clickableRow"><td>'+transitArrayWithClusters[clickedGroup][u][5]+'</td><td>'+transitArrayWithClusters[clickedGroup][u][6]+'</td><td>'+transitArrayWithClusters[clickedGroup][u][4]+'</td></tr>');
-                        }
-                      }
+                      // $("#dataTable tr").remove();
+                      // $("#dataTable").append('<tr><th onclick="sortTable(0,dataTable)">Origin Zone    </th><th onclick="sortTable(1,dataTable)">Destination Zone   </th><th onclick="sortTable(2,dataTable)">Value</th></tr>');
+                      // 
+                      // for (var u =0;u<transitArrayWithClusters[clickedGroup].length;u++){
+                      //   if(transitArrayWithClusters[clickedGroup][u][4]/ratio>=0.05){
+                      //     $("#dataTable").append('<tr class="clickableRow"><td>'+transitArrayWithClusters[clickedGroup][u][5]+'</td><td>'+transitArrayWithClusters[clickedGroup][u][6]+'</td><td>'+transitArrayWithClusters[clickedGroup][u][4]+'</td></tr>');
+                      //   }
+                      // }
                       if($("#lines").is(':checked') === true){
                         $(".clickableRow").on("click", function() {
-                          $("#dataTable tr").removeClass("selected");
-                          var rowItems = $(this).children('td').map(function () {
-                              return this.innerHTML;
-                          }).toArray();
-                          $(this).addClass('selected');
+                          // $("#dataTable tr").removeClass("selected");
+                          // var rowItems = $(this).children('td').map(function () {
+                          //     return this.innerHTML;
+                          // }).toArray();
+                          // $(this).addClass('selected');
                           for(var p=0,m =startEndLayer.graphics.length;p<m;p++){
 
                                 if(startEndLayer.graphics[p].attributes.inZone === rowItems[0] &&startEndLayer.graphics[p].attributes.outZone ===rowItems[1] ){
@@ -332,38 +337,7 @@ require(["esri/geometry/projection","esri/map", "esri/Color", "esri/layers/Graph
             //Rerun kmeans
             $("#RerunButton").click(function(){
                 $("#currentIteration").val("0");
-                $("#nextIteration").prop('disabled', true);
-                $("#RerunButton").prop('disabled', true);
-                $("#autoRun").prop('disabled', true);
-                $("#WantJson").prop('disabled', true);
-                map.disableMapNavigation();
-                map.hideZoomSlider();
-               if(Number($("#clusters").val())>0){
-                 if(transitArray.length<clusterNumber){
-                   newCentroid= transitArray;
-                 }
-                 else{
-                 clusterNumber =Number($("#clusters").val());
-
-                   newCentroid = new Array(clusterNumber);
-                   for(var i2 = 0;i2<clusterNumber;i2++){
-                       var randomWeight = Math.floor(Math.random()*(totalWeight));
-                       for (var i3=0,l = transitArray.length;i3<l;i3++){
-                           if(sumOfTransitArray[i3]>=randomWeight && newCentroid.indexOf(transitArray[i3])< 0) {
-                               newCentroid[i2] = transitArray[i3];
-                               break;
-                           }
-                       }
-                   }
-                 }
-   
-                 if(transitArray.length>0){
-                     result = splitIntoGroups();
-                 }
-               }
-             else{
-               alert("Please enter a number!");
-             }
+                processData(selectedMatrix,clusterNumber,1);                  
             });
             //process kmeans 
             function processData(selectedMatrix,clusterNumber,iteration) {
@@ -415,7 +389,6 @@ require(["esri/geometry/projection","esri/map", "esri/Color", "esri/layers/Graph
               }
               else{
                 newCentroid= new Array(clusterNumber);    
-                
                 for(var i2 = 0;i2<newCentroid.length;i2++){
                     var randomWeight = Math.floor(Math.random()*(totalWeight));
                     for (var i3=0;i3<totalTransitLength;i3++){
