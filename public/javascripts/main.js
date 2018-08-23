@@ -23,7 +23,7 @@ var sumOfTransitArray;
 var transitLen;
 var transitAngle;
 var travelMatrix={};
-var selectedDistrict='all';
+var selectedDistrict='district';
 var connections = [];
 //If your csvfile's  title changes, just change values in this Object. 
 //Don't need to change other code 
@@ -88,9 +88,10 @@ require(["esri/geometry/projection","esri/map", "esri/Color", "esri/layers/Graph
                   $("#clusters").val(defaultClusterNumber);
                   clusterNumber = defaultClusterNumber;
                   $('#currentIteration').val(0);
+                  
+                  processData(selectedMatrix,clusterNumber,1);
                   connections.push(dojo.connect(geoJsonLayer1, 'onDblClick', MouseClickhighlightGraphic));
 
-                  // processData(selectedMatrix,clusterNumber,1);
               });
             });
             //range sliders
