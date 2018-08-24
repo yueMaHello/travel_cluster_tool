@@ -148,7 +148,7 @@ require(["esri/geometry/projection","esri/map", "esri/Color", "esri/layers/Graph
               map.removeLayer(selectedDistrictLayer);
               selectedDistrictLayer = new GraphicsLayer({ id: "selectedDistrictLayer" });
               selectedDistrict=evt.graphic.attributes.District;
-              console.log(selectedDistrict)
+
               var highlightSymbol = new SimpleFillSymbol(
                 SimpleFillSymbol.STYLE_SOLID,
                 new SimpleLineSymbol(
@@ -338,6 +338,7 @@ require(["esri/geometry/projection","esri/map", "esri/Color", "esri/layers/Graph
             //Rerun kmeans
             $("#RerunButton").click(function(){
                 $("#currentIteration").val("0");
+                clusterNumber =Number($("#clusters").val());
                 processData(selectedMatrix,clusterNumber,1);                  
             });
             //process kmeans 
