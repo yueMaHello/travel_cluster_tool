@@ -42,10 +42,10 @@ var csvFileTitle = {
 //get esri resource
 require(["esri/geometry/projection","esri/map", "esri/Color", "esri/layers/GraphicsLayer", "esri/graphic", "esri/geometry/Polyline", "esri/geometry/Polygon", "../externalJS/DirectionalLineSymbol.js","esri/layers/FeatureLayer","../externalJS/geojsonlayer.js",
         "esri/symbols/SimpleMarkerSymbol",  "esri/symbols/SimpleLineSymbol", "esri/symbols/SimpleFillSymbol", "esri/SpatialReference","esri/config", "esri/request",
-        "dojo/ready", "dojo/dom", "dojo/on","esri/dijit/BasemapToggle","esri/dijit/Scalebar","esri/geometry/Point","esri/InfoTemplate",   "esri/geometry/Extent"],
+        "dojo/ready","dojo/_base/connect", "dojo/dom", "dojo/on","esri/dijit/BasemapToggle","esri/dijit/Scalebar","esri/geometry/Point","esri/InfoTemplate",   "esri/geometry/Extent"],
     function (projection,Map, Color, GraphicsLayer, Graphic, Polyline, Polygon, DirectionalLineSymbol,FeatureLayer,GeojsonLayer,
               SimpleMarkerSymbol, SimpleLineSymbol, SimpleFillSymbol,SpatialReference, config, request,
-              ready, dom, on,BasemapToggle,Scalebar,Point,InfoTemplate,Extent) {
+              ready, connect,dom, on,BasemapToggle,Scalebar,Point,InfoTemplate,Extent) {
         ready(function () {
             //projection is used to transfer data between different SpatialReference
              if (!projection.isSupported()) {
@@ -208,7 +208,7 @@ require(["esri/geometry/projection","esri/map", "esri/Color", "esri/layers/Graph
                   //readd the clustered lines
                   map.addLayer(graphicsLayer);
                   //each clusted line should have a group of single lines
-                  graphicsLayer.on("click",function(evt){
+                  connect.connect(graphicsLayer,"onClick",function(evt){
                     var clickedGroup = evt.graphic.attributes.indexOfGroup;
                     if(typeof(clickedGroup)!=="undefined"){
                       map.removeLayer(startEndLayer);
