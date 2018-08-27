@@ -34,7 +34,6 @@ web application(with some python scripts). The Weighted-Kmeans algorithm is used
 ## Current Issues:
 1. Sometimes, when you zoom out very quickly, the webpage may lose all the lines. You can run the next iteration to fix it.
 2. Browsing through a Chrome Box may not work. 
-3. Browsing through Chrome can sometimes disable the click f the lines. If it happens, you should use control panel to terminate the Chrome App and reopen it.
 
 ## Some Tips:
 
