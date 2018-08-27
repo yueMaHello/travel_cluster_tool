@@ -29,7 +29,7 @@ web application(with some python scripts). The Weighted-Kmeans algorithm is used
 #### 1. Use your terminal going to the root './Travel_Cluster_Tool' and type 'npm start'
 1. You can see some messages in the terminal.
 
-#### 2. Use Google Chrome or Firefox to browse "https://localhost:3036". Firefox may work better than Google Chrome. 
+#### 2. Use Google Chrome or Firefox to browse "https://localhost:3036" or http://162.106.202.155:3036. Firefox may work better than Google Chrome. 
 
 ## Current Issues:
 1. Sometimes, when you zoom out very quickly, the webpage may lose all the lines. You can run the next iteration to fix it.
