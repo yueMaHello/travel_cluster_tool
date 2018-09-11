@@ -22,7 +22,8 @@ web application(with some python scripts). The Weighted-Kmeans algorithm is used
 #### From Lab Computer I
 1. Go to the root foler './Travel_Cluster_Tool'
 2. The district geojson file is stored in './public/data/geoInfo'. The geojson file has been converted to EPSG4326. 
-3. The csv source file is './public/data/Origin_Dest_Zones_by_Trip_Purpose_3776.csv'. Please be cautious that the csv file should use EPSG3776 as Spatial reference. EPSG3776 is a local spatial reference which uses meters, but EPSG4326 is a global reference which doesn't use meters.
+3. The csv source file is './public/data/Origin_Dest_Zones_by_Trip_Purpose_3776.csv'. Please be cautious that the csv file should use EPSG3776 as Spatial reference. EPSG3776 is a local spatial reference which uses meters. The reason why not using EPSG4326 is that 4326 is a global reference which is not in meters. It will be unprecise if we use EPSG4326 to calculate the distance.
+4. There is a './public/dataExample' folder provided.
 
 ## Run The Application
 #### 1. Use your terminal going to the root './Travel_Cluster_Tool' and type 'npm start'
