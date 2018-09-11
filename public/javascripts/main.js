@@ -20,14 +20,13 @@ var startEndLayer;
 var selectedDistrictLayer;
 var totalWeight;
 var sumOfTransitArray;
-var transitLen;
-var transitAngle;
 var travelMatrix={};
 var selectedDistrict='district'; 
 var connections = [];
 //If your csvfile's  title changes, just change values in this Object. 
 //Don't need to change other code 
 var csvFileTitle = {
+    csvFileUrl:"./data/Origin_Dest_Zones_by_Trip_Purpose_Region_3776.csv",
   origin_zone:"OriginZoneTAZ1669EETP",
   origin_district:"OriginZoneDistrictTAZ1669EETP",
   origin_x:"Origin_XCoord",
@@ -67,7 +66,7 @@ require(["esri/geometry/projection","esri/map", "esri/Color", "esri/layers/Graph
             $("#flowTable tr").remove();
             $("#flowTable").append('<tr><th>Travel Type Selction</th></tr>');
 
-            d3.csv("./data/Origin_Dest_Zones_by_Trip_Purpose_Region_3776.csv", function(data) {
+            d3.csv(csvFileTitle.csvFileUrl, function(data) {
               var uniqueTravelType = data.map(data => data.Purpose_Category)
                 .filter((value, index, self) => self.indexOf(value) === index);
 
@@ -123,12 +122,8 @@ require(["esri/geometry/projection","esri/map", "esri/Color", "esri/layers/Graph
              map.disableDoubleClickZoom();
              geoJsonLayer1.setInfoTemplate(false);
              map.addLayer(geoJsonLayer1);
-            });
-            
-
-            
+            });  
             //get notification if radio buttons are clicked
-            
             $('input:radio[name=allOrDistrict]').change(function() {
               //cluster all districts
               if(this.value==='all'){
@@ -239,22 +234,8 @@ require(["esri/geometry/projection","esri/map", "esri/Color", "esri/layers/Graph
                          alert("Some error happens, please try to refresh the page!");
                        }
                       map.addLayer(startEndLayer);
-                      //renew the data table
-                      // $("#dataTable tr").remove();
-                      // $("#dataTable").append('<tr><th onclick="sortTable(0,dataTable)">Origin Zone    </th><th onclick="sortTable(1,dataTable)">Destination Zone   </th><th onclick="sortTable(2,dataTable)">Value</th></tr>');
-                      // 
-                      // for (var u =0;u<transitArrayWithClusters[clickedGroup].length;u++){
-                      //   if(transitArrayWithClusters[clickedGroup][u][4]/ratio>=0.05){
-                      //     $("#dataTable").append('<tr class="clickableRow"><td>'+transitArrayWithClusters[clickedGroup][u][5]+'</td><td>'+transitArrayWithClusters[clickedGroup][u][6]+'</td><td>'+transitArrayWithClusters[clickedGroup][u][4]+'</td></tr>');
-                      //   }
-                      // }
                       if($("#lines").is(':checked') === true){
                         $(".clickableRow").on("click", function() {
-                          // $("#dataTable tr").removeClass("selected");
-                          // var rowItems = $(this).children('td').map(function () {
-                          //     return this.innerHTML;
-                          // }).toArray();
-                          // $(this).addClass('selected');
                           for(var p=0,m =startEndLayer.graphics.length;p<m;p++){
 
                                 if(startEndLayer.graphics[p].attributes.inZone === rowItems[0] &&startEndLayer.graphics[p].attributes.outZone ===rowItems[1] ){
