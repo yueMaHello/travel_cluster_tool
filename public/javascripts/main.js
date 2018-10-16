@@ -1,4 +1,26 @@
-/*jshint esversion: 6 */
+/*This is a Nodejs web application. The Weighted-Kmeans algorithm is used for clustering.
+The App can show clustering results after each iterations on the map.
+The Kmeans process is sped up by multi-threading method in browser,
+and is visualized on the map to let user clearly see the converging process.
+One important thing needed to be careful is that the data has to provide lat and lng in ESRI 3776 format instead of general 4326
+Since ESRI 4326 is not measured in meters and will lead to issue.
+Since multi-threading and visualization after each iteration in Browser is quite complicated, the code is complex as well.
+If you have to change the code, please be very careful!!!
+*/
+
+//If your csvfile's title changes, just change values in this Object.
+//Don't need to change other code
+var csvFileTitle = {csvFileUrl:"./data/Origin_Dest_Zones_by_Trip_Purpose_Region_3776.csv",
+    origin_zone:"OriginZoneTAZ1669EETP",
+    origin_district:"OriginZoneDistrictTAZ1669EETP",
+    origin_x:"Origin_XCoord",
+    origin_y:"Origin_YCoord",
+    dest_zone:"DestZoneTAZ1669EETP",
+    dest_district:"DestZoneDistrictTAZ1669EETP",
+    dest_x:"Dest_XCoord",
+    dest_y:"Dest_YCoord",
+    weight:"Total"
+};
 var map;
 var currentIteration = 1;//initialization
 var result;
@@ -23,20 +45,7 @@ var sumOfTransitArray;
 var travelMatrix={};
 var selectedDistrict='district'; 
 var connections = [];
-//If your csvfile's  title changes, just change values in this Object. 
-//Don't need to change other code 
-var csvFileTitle = {
-    csvFileUrl:"./data/Origin_Dest_Zones_by_Trip_Purpose_Region_3776.csv",
-  origin_zone:"OriginZoneTAZ1669EETP",
-  origin_district:"OriginZoneDistrictTAZ1669EETP",
-  origin_x:"Origin_XCoord",
-  origin_y:"Origin_YCoord",
-  dest_zone:"DestZoneTAZ1669EETP",
-  dest_district:"DestZoneDistrictTAZ1669EETP",
-  dest_x:"Dest_XCoord",
-  dest_y:"Dest_YCoord",
-  weight:"Total"  
-};
+
 
 //get esri resource
 require(["esri/geometry/projection","esri/map", "esri/Color", "esri/layers/GraphicsLayer", "esri/graphic", "esri/geometry/Polyline", "esri/geometry/Polygon", "../externalJS/DirectionalLineSymbol.js","esri/layers/FeatureLayer","../externalJS/geojsonlayer.js",
@@ -60,7 +69,7 @@ require(["esri/geometry/projection","esri/map", "esri/Color", "esri/layers/Graph
             geoSpatialReference = new SpatialReference({
               wkid: 3776
             });
-        //show default clusterNumber
+            //show default clusterNumber
             $("#clusters").val(clusterNumber);
             $("#currentIteration").prop('disabled', true);
             $("#flowTable tr").remove();

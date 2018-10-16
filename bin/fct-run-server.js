@@ -13,6 +13,8 @@ var fs = require('fs');
  */
 var port = normalizePort(process.env.FCT_HTTP_PORT || '3036');
 app.set('port', port);
+console.log('The app is running on port '+port)
+
 /**
  * Create HTTP server.
  */

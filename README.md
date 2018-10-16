@@ -2,7 +2,7 @@
 
 
 This is a [Nodejs](https://docs.npmjs.com/getting-started/installing-node)
-web application(with some python scripts). The Weighted-Kmeans algorithm is used for clustering. The App can show clustering results after each iterations on the map.
+web application. The Weighted-Kmeans algorithm is used for clustering. The App can show clustering results after each iterations on the map.
 ## Set Up
 
 #### From GitHub
