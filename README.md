@@ -2,7 +2,9 @@
 
 
 This is a [Nodejs](https://docs.npmjs.com/getting-started/installing-node)
-web application. The Weighted-Kmeans algorithm is used for clustering. The App can show clustering results after each iterations on the map.
+web application. The Weighted-Kmeans algorithm is used for clustering. The App can show clustering results after each iteration on the map.
+Multithread method is used to speed up the process. The user can adjust thread number, cluster size, iteration, location and so on. 4 to 8 threads are always suitable, though you can raise it up based on your computer condtion. 
+
 ## Set Up
 
 #### From GitHub
