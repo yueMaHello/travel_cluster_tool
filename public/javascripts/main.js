@@ -87,6 +87,7 @@ require(["esri/geometry/projection","esri/map", "esri/Color", "esri/layers/Graph
                     
                 $(".clickableRow2").on("click", function() {
                   //highlight selected row
+                  dojo.forEach(connections,dojo.disconnect);
                   $("#flowTable tr").removeClass("selected");
                   var rowItem = $(this).children('td').map(function () {
                       return this.innerHTML;
@@ -333,6 +334,7 @@ require(["esri/geometry/projection","esri/map", "esri/Color", "esri/layers/Graph
             });
             //process kmeans 
             function processData(selectedMatrix,clusterNumber,iteration) {
+
               $("#nextIteration").prop('disabled', true);
               $("#RerunButton").prop('disabled', true);
               $("#autoRun").prop('disabled', true);
@@ -489,6 +491,7 @@ require(["esri/geometry/projection","esri/map", "esri/Color", "esri/layers/Graph
             }
             newCentroid.push([orig_x,orig_y,dest_x,dest_y,weight,key]);
           }
+          console.log(newCentroid)
           return newCentroid;
         }
         //generate geojson file which can be used in QGIS
