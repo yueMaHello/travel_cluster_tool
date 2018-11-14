@@ -527,7 +527,10 @@ require(["esri/geometry/projection","esri/map", "esri/Color", "esri/layers/Graph
           else{
             ratio=maxWidth/12;
           }
-        
+          if(ratio<15){
+              ratio = 15
+
+          }
           for(var j = 0,k= newCentroid.length;j<k;j++){
             var centroidWidth;
             centroidWidth = newCentroid[j][4]/ratio;
