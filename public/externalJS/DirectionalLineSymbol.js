@@ -25,32 +25,30 @@
 ///////////////////////////////////////////////////////////////////////////
 /* jshint loopfunc: true */
 define([
-  "dojo/_base/declare",
-  "dojo/_base/lang",
-  "dojo/query",
-  "dojo/dom",
-  "dojo/dom-construct",
-  "dojo/dom-style",
-  "dojox/gfx",
-  "dojo/Stateful",
-
-  "esri/geometry/screenUtils",
-  "esri/symbols/SimpleLineSymbol",
-  "esri/symbols/SimpleMarkerSymbol",
-  "esri/symbols/PictureMarkerSymbol",
-  "esri/graphic",
-  "esri/geometry/Point",
-  "esri/geometry/ScreenPoint",
-  "esri/geometry/geometryEngine",
-
-  "dojo/_base/fx",
-  "dojo/fx",
-  "dojox/gfx/fx",
-  "dojo/on"
+    "dojo/_base/declare",
+    "dojo/_base/lang",
+    "dojo/query",
+    "dojo/dom",
+    "dojo/dom-construct",
+    "dojo/dom-style",
+    "dojox/gfx",
+    "dojo/Stateful",
+    "esri/geometry/screenUtils",
+    "esri/symbols/SimpleLineSymbol",
+    "esri/symbols/SimpleMarkerSymbol",
+    "esri/symbols/PictureMarkerSymbol",
+    "esri/graphic",
+    "esri/geometry/Point",
+    "esri/geometry/ScreenPoint",
+    "esri/geometry/geometryEngine",
+    "dojo/_base/fx",
+    "dojo/fx",
+    "dojox/gfx/fx",
+    "dojo/on"
 ], function (
-  declare, lang, query, dom, domConstruct, domStyle, gfx, Stateful,
-  screenUtils, SimpleLineSymbol, SimpleMarkerSymbol, PictureMarkerSymbol, Graphic, Point, ScreenPoint, geometryEngine,
-  fx, coreFx, shapeFx, on
+    declare, lang, query, dom, domConstruct, domStyle, gfx, Stateful,
+    screenUtils, SimpleLineSymbol, SimpleMarkerSymbol, PictureMarkerSymbol, Graphic, Point, ScreenPoint, geometryEngine,
+    fx, coreFx, shapeFx, on
 ) {
     return declare([SimpleLineSymbol, Stateful], {
         constructor: function (options) {
@@ -82,13 +80,13 @@ define([
             this.setColor(options.color);
             this.setWidth(options.width);
 
-
             this.directionSymbols = {
                 arrow1: "m0.5,50.5c0,0 99.5,-41 99.5,-41c0,0 0.5,81.5 0.5,81.5c0,0 -100,-40.5 -100,-40.5z",
                 arrow2: "M1,50l99.5,-50c0,0 -40,49.5 -40,49.5c0,0 39.5,50 39.5,50c0,0 -99,-49.5 -99,-49.5z",
                 arrow3: "m0.5,50.5l90,-50l9,9.5l-79.5,40.5l80,39.5l-10,10.5l-89.5,-50z",
                 arrow4: "m55.4605,51.5754l43.0685,-48.2908l-43.3797,48.2908l43.8197,44.8899l-43.5085,-44.8899zm-6.0505,42.3899l-0.44,-88.1807l-43.37967,45.7908l43.81967,42.3899z"
             };
+            this.index = options.index;
 
             this.directionColor = options.directionColor || this.color; //a color for the direction symbol, default to the line color
 
@@ -120,13 +118,13 @@ define([
 
             this.drawGraphicDirection = this._drawDirection;
             this.type = "DirectionalLineSymbol";
-      
+
         },
 
 
         getStroke: function () {
             //Use getStroke to init the direction graphics
-  
+
             //Get the graphic, walk the call stack up. Do it slightly differently depending on whether it's a polyline or polygon, (SimpleLineSymbol or SimpleFillSymbol)
             var graphic = arguments.callee.caller.arguments.length > 0 ? arguments.callee.caller.arguments[4] : arguments.callee.caller.caller.arguments[4];
             if (!graphic) {
@@ -222,7 +220,7 @@ define([
             return this.inherited(arguments);
         },
         _drawDirection: function (graphic, graphicsLayer, map) {
-            
+
             if (!graphic.dlsSymbolGroup) {
                 return;
             }
@@ -345,27 +343,27 @@ define([
         },
 
         _getLastItem: function (segments) {
-        	//returns the last item in a polyline segment array
+            //returns the last item in a polyline segment array
             return segments[segments.length-1][segments[segments.length-1].length-1];
         },
 
         _getSecondToLastItem: function (segments) {
-        	//returns the second to last item in a polyline segment array
+            //returns the second to last item in a polyline segment array
             return segments[segments.length-1][segments[segments.length-1].length-2];
         },
 
         _getFirstItem: function (segments) {
-        	//returns the first item in a polyline segment array
+            //returns the first item in a polyline segment array
             return segments[0][0];
         },
 
         _getAngle: function (pt1, pt2) {
-        	//retuns an angle between two points
+            //retuns an angle between two points
             return ((180 / Math.PI) * Math.atan2(pt2[1] - pt1[1], pt2[0] - pt1[0])) - 180;
         },
 
         _isEqual: function (a, b) {
-        	//Check if two objects are equal
+            //Check if two objects are equal
             //http://adripofjavascript.com/blog/drips/object-equality-in-javascript.html
 
             //Create arrays of property names
@@ -394,7 +392,7 @@ define([
         },
 
         _createSymbol: function (symbol, angle) {
-        	//creates a symbol from a simpleMarkerSymbol, pictureMarkerSymbol or predefined SVG string
+            //creates a symbol from a simpleMarkerSymbol, pictureMarkerSymbol or predefined SVG string
 
             var sym;
             //get the symbol. If it's not a string (ie: one of the pre-canned symbols) it should be a SimpleMarkerSymbol or PictureMarkerSymbol.
@@ -406,9 +404,9 @@ define([
                 //if symbol is a string, set the path of a simple marker symbol to the one the predefined paths if it is set to one of those, or set the path to the string.
                 sym = new SimpleMarkerSymbol();
                 sym.setSize(this.directionSize)
-                        .setPath(this.directionSymbols[symbol] ? this.directionSymbols[symbol] : symbol)
-                        .setOutline(null)
-                        .setColor(this.directionColor);
+                    .setPath(this.directionSymbols[symbol] ? this.directionSymbols[symbol] : symbol)
+                    .setOutline(null)
+                    .setColor(this.directionColor);
             }
             else {
                 console.error("Symbol must be set to one of the pre-defined strings {'arrow1', 'arrow2', 'arrow3', 'arrow4'}, or a SimpleMarkerSymbol or PictureMarkerSymbol.");
@@ -418,10 +416,10 @@ define([
         },
 
         _createGraphic: function (directionPoint, symbol) {
-        	//creates a graphic from using screen poins and point symbol as input parameters
+            //creates a graphic from using screen poins and point symbol as input parameters
             var g = new Graphic();
             g.setSymbol(symbol);
-            g.attributes = { isDirectionalGraphic: true };
+            g.attributes = { isDirectionalGraphic: true, index: this.index };
             var sp = new ScreenPoint(directionPoint[0], directionPoint[1]);
             var mp = this.map.toMap(sp);
             g.geometry = (geometryEngine.within(mp, this.map.extent)) ? mp : null;

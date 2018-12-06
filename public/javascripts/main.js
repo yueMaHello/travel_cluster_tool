@@ -94,10 +94,7 @@ require(["esri/geometry/projection","esri/map", "esri/Color", "esri/layers/Graph
                   }).toArray();
                   $(this).addClass("selected");
                   selectedMatrix=rowItem[0];
-                  $("#clusters").val(defaultClusterNumber);
-                  clusterNumber = defaultClusterNumber;
                   $('#currentIteration').val(0);
-                  
                   processData(selectedMatrix,clusterNumber,1);
                   connections.push(dojo.connect(geoJsonLayer1, 'onDblClick', MouseClickhighlightGraphic));
 
@@ -214,7 +211,7 @@ require(["esri/geometry/projection","esri/map", "esri/Color", "esri/layers/Graph
                   map.addLayer(graphicsLayer);
                   //each clusted line should have a group of single lines
                   connect.connect(graphicsLayer,"onClick",function(evt){
-                    var clickedGroup = evt.graphic.attributes.indexOfGroup;
+                    var clickedGroup = evt.graphic.attributes.index||evt.graphic.symbol.index;
                     if(typeof(clickedGroup)!=="undefined"){
                       map.removeLayer(startEndLayer);
                       startEndLayer = new GraphicsLayer({ id: "startEndLayer" });
@@ -546,6 +543,7 @@ require(["esri/geometry/projection","esri/map", "esri/Color", "esri/layers/Graph
                   style: SimpleLineSymbol.STYLE_SOLID,
                   color: new Color([255,102, 102]),
                   width: centroidWidth,
+                  index:newCentroid[j][5],
                   directionSymbol: "arrow2",
                   directionPixelBuffer: 12,
                   directionColor: new Color([204, 51, 0]),
@@ -557,7 +555,7 @@ require(["esri/geometry/projection","esri/map", "esri/Color", "esri/layers/Graph
               };
               var infoTemplate = new InfoTemplate("Value: ${value}");
               var advPolyline = new Polyline(polylineJson,viewSpatialReference);
-              var ag = new Graphic(advPolyline, advSymbol, {indexOfGroup:newCentroid[j][5],value:newCentroid[j][4]}, infoTemplate);
+              var ag = new Graphic(advPolyline, advSymbol, {value:newCentroid[j][4]}, infoTemplate);
               graphicsLayer.add(ag);
             }
           }
@@ -643,7 +641,7 @@ require(["esri/geometry/projection","esri/map", "esri/Color", "esri/layers/Graph
             const projectedPointDest = projection.project(pointDest, viewSpatialReference);
             var infoTemplate = new InfoTemplate("Value: ${value}","Origin Zone: ${inZone}<br/>Destination Zone:${outZone}");
 
-            if(centroidWidth*8>0.01){
+            if(centroidWidth*8>0.7){
                 if(line[5]===line[6]){
                     var squareSymbol = new SimpleMarkerSymbol({
                         "color":[0,0,128,128],
