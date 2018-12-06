@@ -225,7 +225,7 @@ define([
                 return;
             }
 
-            var group = graphic.dlsSymbolGroup;
+            //var group = graphic.dlsSymbolGroup;
             var geometry = graphic.geometry;
 
             //match geometry to map spatial reference
@@ -261,7 +261,7 @@ define([
 
                     var startS = startG.getShape();
                     if (startS) {
-                        group.add(startS);
+                        //group.add(startS);
                         startG.attr("class", "dls-symbol");
                         graphic.directions.push(startG);
                         if (!graphic.visible) startG.hide();
@@ -295,7 +295,7 @@ define([
                             graphicsLayer.add(g);
 
                             var s = g.getShape();
-                            group.add(s);
+                            //group.add(s);
                             g.attr("class", "dls-symbol");
                             graphic.directions.push(g);
                             if (!graphic.visible) g.hide();
@@ -321,7 +321,7 @@ define([
 
                                 var endS = endG.getShape();
                                 if (endS) {
-                                    group.add(endS);
+                                    //group.add(endS);
                                     endG.attr("class", "dls-symbol");
                                     graphic.directions.push(endG);
                                     if (!graphic.visible) endG.hide();
