@@ -87,7 +87,7 @@ define([
                 arrow4: "m55.4605,51.5754l43.0685,-48.2908l-43.3797,48.2908l43.8197,44.8899l-43.5085,-44.8899zm-6.0505,42.3899l-0.44,-88.1807l-43.37967,45.7908l43.81967,42.3899z"
             };
             this.index = options.index;
-
+            this.demand = options.demand;
             this.directionColor = options.directionColor || this.color; //a color for the direction symbol, default to the line color
 
             this.directionSize = options.directionSize || 12;
@@ -419,7 +419,7 @@ define([
             //creates a graphic from using screen poins and point symbol as input parameters
             var g = new Graphic();
             g.setSymbol(symbol);
-            g.attributes = { isDirectionalGraphic: true, index: this.index };
+            g.attributes = { isDirectionalGraphic: true, index: this.index, demand:this.demand };
             var sp = new ScreenPoint(directionPoint[0], directionPoint[1]);
             var mp = this.map.toMap(sp);
             g.geometry = (geometryEngine.within(mp, this.map.extent)) ? mp : null;
