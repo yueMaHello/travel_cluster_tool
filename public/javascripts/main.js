@@ -307,11 +307,7 @@ ready, connect,dom, on,BasemapToggle,Scalebar,Point,InfoTemplate)
             if(!selectedMatrix){
                 alert("You haven't select any travel type!");
             }
-            else if(selectedDistrict ==='district'){
-
-                alert('Please double click on a zone!');
-            }
-            else if(transitArray.length ===0){
+            else if(selectedDistrict !=='district'&&transitArray.length ===0){
 
                 alert('No travel in this zone!');
                 return;
@@ -600,7 +596,7 @@ ready, connect,dom, on,BasemapToggle,Scalebar,Point,InfoTemplate)
     //if user select 'dots' to observe
     function startEndDots(line){
         //it will adjust the size based on current dataset automatically
-        let adjustedSize=line[4]*25/ratio;
+        let adjustedSize=line[4]*200/ratio;
         //the data has huge gap, will eliminate very small ones.
 
         if(adjustedSize<0.5&&adjustedSize>0.05){
@@ -752,3 +748,62 @@ function Variable(initVal, onChange) {
         this.onChange();
     };
 }
+$('#tour').on('click',function(e){
+    let intro1 = introJs();
+    intro1.setOptions({
+        tooltipPosition : 'top',
+        steps: [
+            {
+                element: 'h1',
+                intro: ' Welcome to Travel Cluster Tool! The application uses a weighted K-means clustering method to cluster trips.',
+                position: 'top'
+            },            {
+                element: '#flowDiv',
+                intro: 'Please choose one travel type by clicking.',
+                position: 'left'
+            },
+            {
+                element: '#map',
+                intro: 'Please double click on a district zone',
+                position: 'top'
+            },
+            {
+                element: '#nextIteration',
+                intro: 'Now, you could try to click on this button to run next iteration',
+                position: 'top'
+            },
+            {
+                element: '.switch',
+                intro: 'Could you try to toggle this slider? Keep an eye on the map!',
+                position: 'top'
+            },
+            {
+                element: '.switch',
+                intro: 'When the flows almost converge, you could switch back this slider to stop the iteration.',
+                position: 'top'
+            },
+            {
+                element: '#map',
+                intro: 'You could click on one red flow to see its sub-flows.',
+                position: 'top'
+            },
+            {
+                element: '#clusters',
+                intro: 'You could try to change the number of clusters.',
+                position: 'top'
+            },
+            {
+                element: '#RerunButton',
+                intro: 'Click on this rerun button to set up the new number of clusters.',
+                position: 'top'
+            },
+            {
+                element: '.observationLevel',
+                intro: 'You could "All", which means it cluster trips from all districts of Edmonton.',
+                position: 'top'
+            },
+
+        ]
+    });
+    intro1.start();
+});

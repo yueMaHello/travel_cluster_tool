@@ -245,3 +245,13 @@ table#flowTable {
 #infoDiv p{
   display: inline;
 }
+#tour{
+    border-radius: 25px;
+    border: 2px solid #000000;
+    padding: 10px;
+    z-index:100;
+    position:absolute;
+    top:40px;
+    cursor:pointer;
+
+}

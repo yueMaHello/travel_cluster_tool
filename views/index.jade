@@ -3,6 +3,9 @@ html
     head
         link(rel="shortcut icon" href="")
         script(src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js")
+        script(src='./externalJS/intro.js')
+        link(rel='stylesheet' href='/stylesheets/introjs.css')
+        link(rel='stylesheet' href='/stylesheets/introjs-modern.css')
         script(src="https://d3js.org/d3.v4.min.js")
         script(src="https://js.arcgis.com/3.25/")
         script(src='./externalJS/multithread.js')
@@ -11,7 +14,7 @@ html
         script(src="./vendor/terraformer/terraformer.min.js")
         script(src="./vendor/terraformer-arcgis-parser/terraformer-arcgis-parser.min.js")
         title= title
-        link(rel='stylesheet', href='/stylesheets/style.css')
+        link(rel='stylesheet' href='/stylesheets/style.css')
         link(rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.0/themes/blitzer/jquery-ui.css" type="text/css")
         link(rel="stylesheet" href="http://js.arcgis.com/3.25/esri/css/esri.css" type="text/css")
         link(rel="stylesheet" href="http://js.arcgis.com/3.25/dijit/themes/claro/claro.css")
@@ -19,7 +22,7 @@ html
         block content
 
           h1= title
-
+          input(id='tour' type='button' value='Take A Tour')
           div(id = "map")
             div(id="viewDiv")
 
@@ -79,9 +82,9 @@ html
                 div(class = "controlPanel")
                   fieldset(data-role='radiogroup')
                     label Observation Level:
-                      input(type="radio" name="allOrDistrict" id="All" value= 'all')
+                      input(type="radio" class='observationLevel' name="allOrDistrict" id="All" value= 'all')
                       Thing All
-                      input(type="radio" name="allOrDistrict" id="District" value='district'  checked title="Double click on map to explore!")
+                      input(type="radio" class='observationLevel' name="allOrDistrict" id="District" value='district'  checked title="Double click on map to explore!")
                       Thing District
   
   
