@@ -39,7 +39,7 @@ This application has all the features of a flow cluster tool. It can be used as 
 1. Sometimes, when you click on the red lines, the dots couldn't show up properly. You should close your browser and reopen it.
 
 ## Some Tips:
-1. All the lines are clickable, no matter it is a blue(single) line or red(clustered) line, but you have to click on the central of the line precisely. Clicking on the arrow won't have any effect.
+1. All the lines are clickable, no matter it is a blue(single) line or red(clustered) line.
 2. If you choose to see single flows in 'lines', the right-side table is clickable and highlight the chosen single flow on the map.
 3. If you choose to see single flows in 'dots', you can see a lot of circles showing in different sizes after clicking on a red clusted line; however, the dots are not clickable and can't be selected through the right-side table.
 4. The slider can let the app run Kmeans continuously, but 20 iterations may be good enough. Don't leave it run forever(though it will stop after 200 iterations), it may occupy your cpu resource.
