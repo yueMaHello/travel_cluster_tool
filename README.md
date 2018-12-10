@@ -4,6 +4,7 @@
 This is a [Nodejs](https://docs.npmjs.com/getting-started/installing-node)
 web application. The Weighted-Kmeans algorithm is used for clustering. The App can show clustering results after each iteration on the map. The data used in this App is the same as the one used in Travel Circle Model; however, a clustering process is applied to show a more general view of travel flows in Edmonton by eliminating small trips.
 A multi-threading method is used to speed up the K-means process. The dataset is divided into n (n is the number of threads) parts and then do distance calculation at the same time.
+This application has all the features of a flow cluster tool. It can be used as a template to create other flow cluster tools.
 
 
 ## Set Up
@@ -35,8 +36,7 @@ A multi-threading method is used to speed up the K-means process. The dataset is
 #### 2. Use Google Chrome or Firefox to browse "https://localhost:3036" or "http://162.106.202.155:3036". Firefox may work better than Google Chrome. 
 
 ## Current Issues:
-1. Sometimes, when you zoom out very quickly, the webpage may lose all the lines. You can run the next iteration to fix it.
-2. Browsing through a Chrome Box may not work. 
+1. Sometimes, when you click on the red lines, the dots couldn't show up properly. You should close your browser and reopen it.
 
 ## Some Tips:
 1. All the lines are clickable, no matter it is a blue(single) line or red(clustered) line, but you have to click on the central of the line precisely. Clicking on the arrow won't have any effect.
