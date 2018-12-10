@@ -260,6 +260,10 @@ ready, connect,dom, on,BasemapToggle,Scalebar,Point,InfoTemplate)
     });
     //generate geojson file
     $("#WantJson").click(function(){
+        if(typeof(newCentroid)==='undefined'){
+            alert('No data!');
+            return;
+        }
         let outputGeoJsonFile = outputGeojson(newCentroid);
         let data = JSON.stringify(outputGeoJsonFile,undefined,4);
         let blob = new Blob([data], {type: 'text/json'}),
@@ -476,6 +480,7 @@ ready, connect,dom, on,BasemapToggle,Scalebar,Point,InfoTemplate)
             }
         }
         connect.connect(graphicsLayer,"onClick",function(evt){
+            console.log(evt);
             let clickedGroup = evt.graphic.attributes.index || evt.graphic.symbol.index;
             addPoint(evt);
             if(typeof(clickedGroup)!=="undefined"){
@@ -732,8 +737,8 @@ function splitDataIntoTravelMatrix(uniqueTravelType,data){
         travelMatrix[thisTravelType] = dataOfThisTravelType;
     }
 }
-//this is a self defined Varaible
-//If the Varaible's name is changed, then it will call the onChange function.
+//this is a self defined Variable
+//If the Variable's name is changed, then it will call the onChange function.
 //you can treat it as a monitor
 function Variable(initVal, onChange) {
     this.val = initVal;          //Value to be stored in this object
@@ -802,7 +807,11 @@ $('#tour').on('click',function(e){
                 intro: 'You could "All", which means it cluster trips from all districts of Edmonton.',
                 position: 'top'
             },
-
+            {
+                element: '#WantJson',
+                intro: 'You could get a GeoJson file and plot it in QGIS.',
+                position: 'top'
+            },
         ]
     });
     intro1.start();

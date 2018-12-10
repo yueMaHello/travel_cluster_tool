@@ -4,8 +4,8 @@ html
         link(rel="shortcut icon" href="")
         script(src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js")
         script(src='./externalJS/intro.js')
-        link(rel='stylesheet' href='/stylesheets/introjs.css')
-        link(rel='stylesheet' href='/stylesheets/introjs-modern.css')
+        link(rel='stylesheet' href='/externalStylesheet/introjs.css')
+        link(rel='stylesheet' href='/externalStylesheet/introjs-modern.css')
         script(src="https://d3js.org/d3.v4.min.js")
         script(src="https://js.arcgis.com/3.25/")
         script(src='./externalJS/multithread.js')
@@ -18,10 +18,12 @@ html
         link(rel="stylesheet" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.9.0/themes/blitzer/jquery-ui.css" type="text/css")
         link(rel="stylesheet" href="http://js.arcgis.com/3.25/esri/css/esri.css" type="text/css")
         link(rel="stylesheet" href="http://js.arcgis.com/3.25/dijit/themes/claro/claro.css")
+
     body
         block content
 
-          h1= title
+          //h1= title
+          h1 Flow Cluster Tool
           input(id='tour' type='button' value='Take A Tour')
           div(id = "map")
             div(id="viewDiv")
