@@ -22,6 +22,9 @@ let csvFileTitle = {
     dest_y:"Dest_YCoord",
     weight:"Total"
 };
+//if you have change the district layer(district1669.geojson), you may need to update this variable
+let districtLayerIDTitle = 'District';
+
 let map;
 let currentIteration = 1;//initialization
 let result;
@@ -47,8 +50,6 @@ let sumOfTransitArray;
 let travelMatrix={};
 let selectedDistrict='district';
 let connections = [];
-
-
 //get esri resource
 require(["esri/geometry/projection","esri/map", "esri/Color", "esri/layers/GraphicsLayer", "esri/graphic", "esri/geometry/Polyline", "esri/geometry/Polygon", "../externalJS/DirectionalLineSymbol.js","esri/layers/FeatureLayer","../externalJS/geojsonlayer.js",
 "esri/symbols/SimpleMarkerSymbol",  "esri/symbols/SimpleLineSymbol", "esri/symbols/SimpleFillSymbol", "esri/SpatialReference","esri/config", "esri/request",
@@ -75,7 +76,8 @@ ready, connect,dom, on,BasemapToggle,Scalebar,Point,InfoTemplate)
     $("#clusters").val(clusterNumber);
     $("#currentIteration").prop('disabled', true);
     $("#flowTable tr").remove();
-    $("#flowTable").append('<tr><th>Travel Type Selction</th></tr>');
+    //add title of the selection table
+    $("#flowTable").append('<tr><th>Travel Purpose Selection</th></tr>');
 
     d3.csv(csvFileTitle.csvFileUrl, function(data) {
         let uniqueTravelType = data.map(data => data.Purpose_Category)
@@ -88,6 +90,9 @@ ready, connect,dom, on,BasemapToggle,Scalebar,Point,InfoTemplate)
         });
 
         $(".clickableRow2").on("click", function() {
+            map.enablePan();
+            $('.a_button').prop('disabled', false);
+
             //highlight selected row
             dojo.forEach(connections,dojo.disconnect);
             $("#flowTable tr").removeClass("selected");
@@ -119,7 +124,7 @@ ready, connect,dom, on,BasemapToggle,Scalebar,Point,InfoTemplate)
     //map toggle
     let toggle = new BasemapToggle({
         map: map,
-        basemap: "streets"
+        basemap: "streets-night-vector"
      }, "viewDiv");
     toggle.startup();
     //add geojson district layer
@@ -129,7 +134,8 @@ ready, connect,dom, on,BasemapToggle,Scalebar,Point,InfoTemplate)
             id:"geoJsonLayer"
         });
         map.infoWindow.resize(100,100);
-
+        map.disablePan();
+        $('.a_button').prop('disabled', true);
         map.disableDoubleClickZoom();
         geoJsonLayer1.setInfoTemplate(false);
         map.addLayer(geoJsonLayer1);
@@ -156,7 +162,7 @@ ready, connect,dom, on,BasemapToggle,Scalebar,Point,InfoTemplate)
             map.removeLayer(selectedFlowLayer);
         }
         selectedDistrictLayer = new GraphicsLayer({ id: "selectedDistrictLayer" });
-        selectedDistrict=evt.graphic.attributes.District;
+        selectedDistrict=evt.graphic.attributes[districtLayerIDTitle];
 
         let highlightSymbol = new SimpleFillSymbol(SimpleFillSymbol.STYLE_SOLID,
             new SimpleLineSymbol(SimpleLineSymbol.STYLE_SOLID, new Color([0,225,225]), 2),
@@ -174,7 +180,7 @@ ready, connect,dom, on,BasemapToggle,Scalebar,Point,InfoTemplate)
     on(map, "update-end", hideLoading);
 
     function showLoading() {
-        map.disableMapNavigation();
+
         map.hideZoomSlider();
     }
     function hideLoading(error) {
@@ -458,6 +464,7 @@ ready, connect,dom, on,BasemapToggle,Scalebar,Point,InfoTemplate)
     }
     //renew the map
     function redrawClusters(newCentroid,graphicsLayer,transparent){
+        //calculate ratio based on current selection
         let maxWidth = 0;
         for(let p=0,l=newCentroid.length;p<l;p++){
             if (newCentroid[p][4]>maxWidth){
@@ -482,7 +489,6 @@ ready, connect,dom, on,BasemapToggle,Scalebar,Point,InfoTemplate)
         connect.connect(graphicsLayer,"onClick",function(evt){
             console.log(evt);
             let clickedGroup = evt.graphic.attributes.index || evt.graphic.symbol.index;
-            addPoint(evt);
             if(typeof(clickedGroup)!=="undefined"){
                 map.removeLayer(startEndLayer);
                 startEndLayer = new GraphicsLayer({ id: "startEndLayer" });
@@ -552,6 +558,8 @@ ready, connect,dom, on,BasemapToggle,Scalebar,Point,InfoTemplate)
                     });
                 }
             }
+            addPoint(evt);
+
         });
     }
 
@@ -601,7 +609,7 @@ ready, connect,dom, on,BasemapToggle,Scalebar,Point,InfoTemplate)
     //if user select 'dots' to observe
     function startEndDots(line){
         //it will adjust the size based on current dataset automatically
-        let adjustedSize=line[4]*200/ratio;
+        let adjustedSize=line[4]*100/ratio;
         //the data has huge gap, will eliminate very small ones.
 
         if(adjustedSize<0.5&&adjustedSize>0.05){
@@ -703,7 +711,7 @@ ready, connect,dom, on,BasemapToggle,Scalebar,Point,InfoTemplate)
                 let advSymbol = new DirectionalLineSymbol({
                     style: SimpleLineSymbol.STYLE_SOLID,
                     color: new Color([0,0,204]),
-                    width: centroidWidth/2,
+                    width: centroidWidth,
                     directionSymbol: "arrow1",
                     directionPixelBuffer: 12,
                     directionColor: new Color([0,0,204]),

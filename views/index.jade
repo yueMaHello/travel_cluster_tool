@@ -23,7 +23,7 @@ html
         block content
 
           //h1= title
-          h1 Flow Cluster Tool
+          h1 Travel Flow Cluster Tool
           input(id='tour' type='button' value='Take A Tour')
           div(id = "map")
             div(id="viewDiv")
@@ -51,7 +51,7 @@ html
             div(id="infoDiv")
               div(id = "containerw")
                 fieldset(id = "containerField")
-                  input( type="Button" id = "WantJson" value="Create a GeoJson file ")
+                  input( class='a_button' type="Button" id = "WantJson" value="Create a GeoJson file ")
                 div(class = "controlPanel" data-role='fieldcontain')
                   fieldset(data-role='controlgroup')
                     label(for='clusters') Number Of Clusters:
@@ -60,7 +60,7 @@ html
                     label(for='clusters') &nbsp&nbsp&nbsp&nbsp Number Of Threads:
                        input(id = 'threadNumber',type = 'text',value = '4', size = '2')
                        input(type="range" min="2" max="12" value ="4" id="threadRange")
-                       input( type="Button" id = "RerunButton" value="Run again ")
+                       input( class='a_button' type="Button" id = "RerunButton" value="Run again ")
 
 
 
@@ -68,9 +68,9 @@ html
                   fieldset(data-role='controlgroup')
                     label(for='clusters') Current Iteration:
                       input(type = "integer", id = "currentIteration" value = "0",name = "iteration" size="2")
-                      input( type = "Button" id = "nextIteration",value = "Run next iteration")
+                      input( class='a_button' type = "Button" id = "nextIteration",value = "Run next iteration")
                       label(class="switch")
-                         input(type="checkbox" id = "autoRun")
+                         input(class='a_button' type="checkbox" id = "autoRun")
                          span(class="slider")
 
 
